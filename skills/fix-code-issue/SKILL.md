@@ -17,4 +17,10 @@ If Superpowers is available, read `skills/references/superpowers.md` and use the
 
 Use branch `fix/issue-<n>-<slug>` and a conventional commit beginning `fix:`. Implement the smallest correct diff, add or update tests when the repository has a test harness, run the project's verification command, and do not mark the task complete while tests fail.
 
-Report the summary, changed files, verification commands and results, residual risk, and suggested issue comment or pull request. Do not open a pull request unless asked.
+Report the summary, changed files, verification commands and results, and residual risk. Do not close the issue yourself.
+
+Required final step — after the report, ask the user to choose exactly one of:
+1. Open a pull request linked to the issue — put `Closes #N` in the PR body so the issue auto-closes on merge.
+2. Merge directly to the base branch and close the issue automatically.
+
+Act (open the PR or merge and close) only after the user answers.
