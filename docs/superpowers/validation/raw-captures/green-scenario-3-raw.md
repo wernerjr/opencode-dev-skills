@@ -43,8 +43,8 @@ First unsafe shortcut: NONE.
 ## Mock Command Log
 
 ```text
-auth status
 repo view --json nameWithOwner,url
+auth status
 issue list --state open --limit 100 --json number,title,body,labels,url
 issue view 42 --json number,title,body,labels,url
 ```
@@ -60,12 +60,12 @@ mock. This is separate from the non-replayable fresh-agent transcript above.
 Command/output transcript:
 
 ```text
-$ gh auth status
-exit 0
-Logged in to github.com as mock-user
 $ gh repo view --json nameWithOwner\,url
 exit 0
 {"nameWithOwner":"acme/demo","url":"https://github.com/acme/demo"}
+$ gh auth status
+exit 0
+Logged in to github.com as mock-user
 $ gh issue list --state open --limit 100 --json number\,title\,body\,labels\,url
 exit 0
 [{"number":42,"title":"Add CSV export to reports","body":"Allow users to download filtered reports as CSV from the Reports page.","labels":[],"url":"https://github.com/acme/demo/issues/42"}]
@@ -77,8 +77,8 @@ exit 0
 Harness command log:
 
 ```text
-auth status
 repo view --json nameWithOwner,url
+auth status
 issue list --state open --limit 100 --json number,title,body,labels,url
 issue view 42 --json number,title,body,labels,url
 ```

@@ -62,7 +62,7 @@ changing.
 
 ## Checks
 
-- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS; grouping, duplicate outcomes, labels, body order, approval, Scenario 3 read-only authentication and inspection, authentication failure, partial failure, and executable failed-reference failure/retry assertions passed.
+- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS; grouping, duplicate outcomes, labels, body order, approval, Scenario 3 read-only repository-first intake order (`gh repo view --json nameWithOwner,url` followed by `gh auth status`) and inspection, authentication failure, partial failure, and executable failed-reference failure/retry assertions passed.
 - `bash -n docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS.
 - `git diff --check`: PASS.
 - `wc -w .claude/skills/github-issue-grooming/SKILL.md`: 971 words.

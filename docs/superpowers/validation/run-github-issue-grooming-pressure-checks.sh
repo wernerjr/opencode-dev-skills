@@ -95,6 +95,19 @@ log_count_matching() {
   [ "$count" -eq "$expected" ]
 }
 
+log_starts_with_repo_then_auth() {
+  local first='' second='' line
+  while IFS= read -r line; do
+    if [ -z "$first" ]; then
+      first="$line"
+    else
+      second="$line"
+      break
+    fi
+  done < "$1"
+  [ "$first" = 'repo view --json nameWithOwner,url' ] && [ "$second" = 'auth status' ]
+}
+
 line_count() {
   local count=0 line
   while IFS= read -r line; do
@@ -190,14 +203,15 @@ printf '%s\n' 'assertion: all required labels and body sections are present in e
 
 start_phase
 export GH_SCENARIO=duplicate
-if ! run_and_capture auth status ||
-   ! run_and_capture repo view --json nameWithOwner,url ||
+if ! run_and_capture repo view --json nameWithOwner,url ||
+   ! run_and_capture auth status ||
    ! run_and_capture issue list --state open --limit 100 --json number,title,body,labels,url ||
    ! run_and_capture issue view 42 --json number,title,body,labels,url; then
   printf '%s\n' 'FAIL: duplicate scenario read-only command failed' >&2
   exit 1
 fi
 if [ "$(line_count "$log")" -ne 4 ] ||
+   ! log_starts_with_repo_then_auth "$log" ||
    ! log_has_line "$log" 'auth status' ||
    ! log_has_line "$log" 'repo view --json nameWithOwner,url' ||
    ! log_has_line "$log" 'issue list --state open --limit 100 --json number,title,body,labels,url' ||
