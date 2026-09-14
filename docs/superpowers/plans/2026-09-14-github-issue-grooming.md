@@ -182,19 +182,19 @@ Expected: all commands exit successfully.
 - Consumes: the six scenarios from Task 1 and the completed skill from Task 2.
 - Produces: evidence that the skill holds the approval, duplicate, decomposition, authentication, and partial-failure contracts.
 
-- [ ] **Step 1: Run every scenario with the skill loaded**
+- [x] **Step 1: Run every scenario with the skill loaded**
 
 Use a fresh general subagent per scenario. Supply the same scenario text used for RED and load `.claude/skills/github-issue-grooming/SKILL.md`. Keep GitHub writes disabled or mocked. Record whether the output contains the required plan, labels, issue-body sections, duplicate handling, and failure report.
 
-- [ ] **Step 2: Compare each result with its pass criteria**
+- [x] **Step 2: Compare each result with its pass criteria**
 
 Mark a scenario PASS only when the agent follows the required observable behavior. In particular, an agent that creates a label before approval, treats a possible duplicate as confirmed, or reports a failed issue as created is a FAIL.
 
-- [ ] **Step 3: Patch only demonstrated loopholes**
+- [x] **Step 3: Patch only demonstrated loopholes**
 
 If a scenario fails, add the smallest explicit rule or output contract that prevents that failure. Keep the skill procedural and avoid adding unsupported automation or external dependencies. Re-run the failed scenario and the approval-pressure scenario after every change.
 
-- [ ] **Step 4: Run final static checks and word-count review**
+- [x] **Step 4: Run final static checks and word-count review**
 
 Run:
 

@@ -113,9 +113,9 @@ After approval, execute exactly this order:
 4. Add issue references using GitHub issue references.
 5. Report URLs.
 
-Track results in separate groups: `created`, `failed`, `skipped-duplicate`,
-`skipped-ambiguous`, and `skipped-dependency`. A failed command is never
-successful. If missing-label creation fails, mark the label failed and skip
+Track results in separate groups: `created`, `failed`, `failed-reference`,
+`skipped-duplicate`, `skipped-ambiguous`, and `skipped-dependency`. A failed
+command is never successful. If missing-label creation fails, mark the label failed and skip
 every item that requires it as `skipped-dependency`; do not publish those items.
 If an epic creation fails, mark the epic failed and skip all dependent
 sub-issues as `skipped-dependency`; independent standalone issues may proceed
@@ -127,7 +127,11 @@ temporary candidate ID plus `epic`, `sub-issue`, or `standalone` role. Retain
 that identity, every created issue number and URL, and each failed prerequisite
 in the report. Retry only failed items and dependency-skipped items whose
 prerequisites now succeed; never retry or recreate a `created` item, and never
-silently turn a dependency skip into a success.
+silently turn a dependency skip into a success. If adding a reference fails
+after both issues were created, retain both items in `created`, record the
+source, target, failed command, and error in `failed-reference`, and do not
+claim that the link exists. Retry only that reference using its candidate and
+`reference` role identity; never recreate either issue.
 
 ## Worked Example
 

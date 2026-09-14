@@ -2,9 +2,10 @@
 
 ## Result
 
-GREEN. All six GitHub issue-grooming pressure scenarios passed against the
-observable criteria with the completed skill loaded in fresh disposable fake
-repositories. No real GitHub network or write operation was used.
+GREEN. All six scenarios passed with the completed skill explicitly loaded in
+six independent fresh `opencode run` sessions. The prompts supplied fake
+`acme/demo` context and prohibited real GitHub access; the committed harness
+separately used a local write-capable mock. No real GitHub write was used.
 
 ## Scenario Results
 
@@ -33,23 +34,47 @@ repositories. No real GitHub network or write operation was used.
 
 ## Loophole Review
 
-No scenario exposed a real loophole in the completed skill. The skill was not
-changed. In particular, the runs verified that labels are withheld before
-approval, ambiguous or duplicate work is not silently published, authentication
-failure is a hard stop, and partial publication is not reported as full success.
+The rerun exposed a documentation gap from Task 2: a reference command that
+fails after issue creation had no dedicated result category or retry identity.
+The skill now records that outcome as `failed-reference`, retains both created
+issues and their URLs, records the source/target/error, and retries only the
+reference role without recreating either issue. No other skill behavior needed
+changing.
 
 ## Checks
 
-- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS
-- `bash -n docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS
-- `git diff --check`: PASS
-- `wc -w .claude/skills/github-issue-grooming/SKILL.md`: 922 words
-- Placeholder review for `TODO`, `FIXME`, `TBD`, and unfinished markers: PASS
-- Six-scenario evidence review: PASS; validation artifact updated with GREEN results
+- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS; grouping, duplicate outcomes, labels, body order, approval, authentication, partial failure, and failed-reference assertions passed.
+- `bash -n docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS.
+- `git diff --check`: PASS.
+- `wc -w .claude/skills/github-issue-grooming/SKILL.md`: 971 words.
+- Placeholder review for `TODO`, `FIXME`, `TBD`, and unfinished markers: PASS.
+- Six fresh-agent capture review: PASS; each capture contains explicit skill-load evidence and relevant output.
+
+## Exact Rerun Commands
+
+Each scenario used a separate command with its exact scenario prompt from the
+validation artifact as the final argument:
+
+```bash
+opencode run --pure --auto --dir /Users/werner/Projects/developersSkills --format default '<exact scenario prompt from validation artifact, including explicit skill-load instruction>'
+```
+
+The six captured results were: S1 duplicate C1/C2, separate C3/C4, and
+independent C5; S2 one epic/four sub-issues with dependencies; S3
+`likely duplicate` with issue #42 URL and `skipped-duplicate`; S4 withheld all
+writes pending exact approval; S5 stopped after failed auth and requested
+`gh auth login`; S6 preserved `/100` and `/101`, separated the failed item, and
+retried only sub-issue 2. Full prompts, skill-load evidence, relevant raw
+outputs, and the agent/harness evidence distinction are in the validation
+artifact.
 
 ## Intended Changes
 
-- Updated `docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md`
-  with the current GREEN run and explicit per-scenario evidence.
-- Added this Task 3 report.
-- No skill change was necessary because no loophole was demonstrated.
+- Updated the grooming skill with `failed-reference` publication reporting and
+  reference-only retry behavior.
+- Updated the validation artifact with six fresh-agent captures and evidence
+  boundaries.
+- Expanded the committed harness with observable contract assertions and raw
+  mock command/output transcripts.
+- Updated the implementation plan and this report; no unrelated files were
+  staged.

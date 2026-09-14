@@ -490,4 +490,123 @@ local `gh` mock; no network access or real GitHub mutation was possible.
   scope.
 
 No real loophole was demonstrated, so the skill was not modified. The prior RED
- observations remain historical evidence; the six current results are GREEN.
+observations remain historical evidence; the six current results are GREEN.
+
+## Auditable GREEN Agent Captures
+
+Six independent fresh `opencode run` sessions were executed on 2026-09-14.
+Each command used `--pure --auto --format default`, was given the corresponding
+scenario prompt above, and explicitly required loading
+`.claude/skills/github-issue-grooming/SKILL.md`. The sessions were instructed
+not to modify files or contact real GitHub. These are agent observations, not
+harness assertions; the harness below does not run an agent.
+
+Command form used for each session (with the scenario-specific prompt supplied
+as the final argument):
+
+```text
+opencode run --pure --auto --dir /Users/werner/Projects/developersSkills \
+  --format default '<scenario prompt with explicit skill-load instruction>'
+```
+
+### Scenario 1 Agent Output
+
+```text
+Skill-load evidence: Loaded .claude/skills/github-issue-grooming/SKILL.md explicitly.
+C1/C2 are likely duplicates and should be consolidated. C3/C4 overlap in
+filtering infrastructure but remain separate. C5 is independent documentation.
+Safe dry-run: one report epic with CSV, date, and owner work plus one standalone
+README issue; publish nothing. Required labels were listed for every item.
+```
+
+Result: PASS. The agent preserved all five inputs, grouped the work, and did
+not invent an existing-issue match when GitHub inspection was prohibited.
+
+### Scenario 2 Agent Output
+
+```text
+Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.
+Epic: Account security improvements.
+Sub-issues: password policy enforcement, MFA enrollment, recovery-code rotation,
+and security audit events. Each has type/theme/complexity/priority labels.
+Dependencies: epic-before-all; recovery-code rotation depends on MFA enrollment;
+the other sub-issues can proceed independently. No GitHub commands were run.
+```
+
+Result: PASS. Exactly one epic and four independently testable sub-issues were
+proposed with explicit dependencies.
+
+### Scenario 3 Agent Output
+
+```text
+Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.
+Recommendation: likely duplicate; issue #42 has the exact title and body:
+https://github.com/acme/demo/issues/42. Record skipped-duplicate and do not publish.
+```
+
+Result: PASS. The URL, classification, reason, and exclusion were observable.
+
+### Scenario 4 Agent Output
+
+```text
+Skill-load evidence: explicitly loaded .claude/skills/github-issue-grooming/SKILL.md.
+I will not create anything yet. The current scope has not received explicit approval.
+No GitHub commands were run. The label and issue create commands remain withheld
+until approval of the exact scope, labels, dependencies, and exclusions.
+```
+
+Result: PASS. The agent did not treat “we already discussed it” as approval.
+
+### Scenario 5 Agent Output
+
+```text
+Skill-load evidence: explicitly loaded .claude/skills/github-issue-grooming/SKILL.md.
+Stop immediately after `gh auth status` fails with `not logged into any GitHub hosts`.
+Ask the user to run `gh auth login`, then verify with `gh auth status`. Run no
+repository, issue, label, or publication workflow while authentication fails.
+```
+
+Result: PASS. The agent made authentication failure an unconditional stop.
+
+### Scenario 6 Agent Output
+
+```text
+Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.
+Command attempts: epic create exit 0 -> #100 https://github.com/acme/demo/issues/100;
+sub-issue 1 create exit 0 -> #101 https://github.com/acme/demo/issues/101;
+sub-issue 2 create exit 1 -> validation failed.
+Created: epic #100 and sub-issue 1 #101. Failed: sub-issue 2, validation failed.
+Retry only sub-issue 2; do not recreate the created issues.
+```
+
+Result: PASS. This output records the supplied mock outcomes as agent evidence;
+the executable harness independently records and asserts the mock command log.
+
+## Harness Assertions
+
+The network-free harness was run separately with:
+
+```bash
+bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh
+```
+
+It passed assertions for grouping and duplicate/related/ambiguous outcomes,
+all four label namespaces, exact issue-body section order, empty pre-approval
+writes, exact post-approval write scope, authentication stop, partial-failure
+ordering and URLs, failed-item-only retry, and post-publication
+`failed-reference` retry behavior. Its raw approval, authentication, and
+partial-failure command/output logs are emitted by the command above and are
+harness evidence only. `bash -n` and `git diff --check` also passed.
+
+The latest harness assertion output was:
+
+```text
+assertion: pre-approval write log is empty
+assertion: post-approval log contains exactly the two approved writes
+assertion: grouping, duplicate, related, and ambiguous outcomes are documented
+assertion: all required labels and body sections are present in exact order
+assertion: failed references retain created issues and retry only the reference
+assertion: auth failure stops before repo, issue, label, or publication commands
+assertion: log has epic, successful sub-issue, and failed sub-issue attempts
+assertion: retry report names only failed sub-issue 2
+```

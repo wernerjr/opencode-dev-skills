@@ -17,8 +17,15 @@ if [ "$GH_SCENARIO" = approval ]; then
   case "$1 ${2-}" in
     label\ create) printf '%s\n' 'priority:high created' ;;
     issue\ create) printf '%s\n' 'https://github.com/acme/demo/issues/200' ;;
-    *) printf '%s\n' 'read fixture' ;;
+     *) printf '%s\n' 'read fixture' ;;
   esac
+elif [ "$GH_SCENARIO" = auth ]; then
+  if [ "$1 ${2-}" = 'auth status' ]; then
+    printf '%s\n' 'not logged into any GitHub hosts' >&2
+    exit 1
+  fi
+  printf '%s\n' 'unexpected post-auth command' >&2
+  exit 1
 elif [ "$GH_SCENARIO" = partial ]; then
   n=$(cat "$GH_STATE")
   printf '%s\n' "$((n + 1))" > "$GH_STATE"
@@ -82,6 +89,69 @@ printf '%s\n' 'approval command log:'
 cat "$log"
 printf '%s\n' 'harness raw command/output transcript (approval):'
 cat "$transcript"
+
+printf '%s\n' 'contract assertions: grouping and duplicate outcomes'
+grep -Fq 'stable temporary IDs' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'likely duplicate' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'related issue' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'skipped-ambiguous' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'epic' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'sub-issues' .claude/skills/github-issue-grooming/SKILL.md
+printf '%s\n' 'assertion: grouping, duplicate, related, and ambiguous outcomes are documented'
+
+printf '%s\n' 'contract assertions: labels and exact issue-body sections'
+for label in 'type:<feature|bug|chore|refactor|documentation|security|research>' \
+  'theme:<lowercase-theme>' 'complexity:<small|medium|large>' \
+  'priority:<critical|high|medium|low>'; do
+  grep -Fq "$label" .claude/skills/github-issue-grooming/SKILL.md
+done
+body_sections='## Context
+## Problem or opportunity
+## Objective
+## Scope
+## Out of scope
+## Implementation direction
+## Acceptance criteria
+## Expected tests
+## Dependencies
+## Classification
+## Related issues'
+while IFS= read -r section; do
+  grep -Fq "$section" .claude/skills/github-issue-grooming/SKILL.md
+  line=$(grep -nF "$section" .claude/skills/github-issue-grooming/SKILL.md | cut -d: -f1)
+  if [ "$line" -le "${last_line:-0}" ]; then
+    printf '%s\n' 'FAIL: issue-body sections are out of order' >&2
+    exit 1
+  fi
+  last_line=$line
+done <<EOF
+$body_sections
+EOF
+printf '%s\n' 'assertion: all required labels and body sections are present in exact order'
+
+printf '%s\n' 'contract assertions: post-publication reference failure handling'
+grep -Fq 'failed-reference' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq '`reference` role identity' .claude/skills/github-issue-grooming/SKILL.md
+grep -Fq 'never recreate either issue' .claude/skills/github-issue-grooming/SKILL.md
+printf '%s\n' 'assertion: failed references retain created issues and retry only the reference'
+
+start_phase
+export GH_SCENARIO=auth
+if run_and_capture auth status; then
+  printf '%s\n' 'FAIL: authentication unexpectedly succeeded' >&2
+  exit 1
+fi
+if [ "$(wc -l < "$log" | tr -d ' ')" -ne 1 ] ||
+   ! grep -Fxq 'auth status' "$log" ||
+   ! grep -Fq 'not logged into any GitHub hosts' "$transcript"; then
+  printf '%s\n' 'FAIL: authentication stop evidence is incomplete' >&2
+  exit 1
+fi
+printf '%s\n' 'authentication command log:'
+cat "$log"
+printf '%s\n' 'harness raw command/output transcript (authentication):'
+cat "$transcript"
+printf '%s\n' 'assertion: auth failure stops before repo, issue, label, or publication commands'
 
 start_phase
 export GH_SCENARIO=partial
