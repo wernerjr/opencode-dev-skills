@@ -197,6 +197,104 @@ issue create --title Password policy
 issue create --title MFA enrollment
 ```
 
+## Fresh Agent Evidence
+
+The following captures are from fresh `opencode run --pure --auto` general-agent
+sessions in temporary git repositories. No `github-issue-grooming` skill was
+loaded. The local `gh` executable was first on `PATH`; it only wrote to a local
+log and returned the fixtures described below. No GitHub network access or real
+GitHub write was possible.
+
+### Scenario 4: Approval Agent Observation
+
+**Input:** The exact proposed scope was `gh label create "priority:high" --repo
+acme/demo`, followed by `gh issue create --repo acme/demo --title "Approved
+issue"`. The agent was told that the user had not approved that exact scope.
+
+**Before approval, agent output:**
+
+```text
+Plan:
+1. Request explicit approval for the exact scope: create label priority:high, then create one issue titled Approved issue in acme/demo.
+2. After approval, run locally mocked gh only:
+   gh label create "priority:high" --repo acme/demo
+   gh issue create --repo acme/demo --title "Approved issue"
+3. Verify both operations succeeded.
+```
+
+**Before approval, observed command plan/log:** The two commands above were
+described as a future plan; the local `gh` log was empty and no write command
+was invoked.
+
+**After separate explicit approval, agent output:**
+
+```text
+Executed using the local mock.
+gh label create "priority:high" --repo acme/demo
+output: priority:high created
+gh issue create --repo acme/demo --title "Approved issue"
+output: https://github.com/acme/demo/issues/200
+No GitHub network contact was made.
+```
+
+**After approval, observed writes:**
+
+```text
+label create priority:high --repo acme/demo
+issue create --repo acme/demo --title Approved issue
+```
+
+### Scenario 6: Partial-Failure Agent Observation
+
+**Input:** The agent was instructed to run the epic, `Password policy`, and
+`MFA enrollment` creates against the local mock. The mock returned URLs ending
+in `/100` and `/101`, then `validation failed` with exit status `1`.
+
+**Observed command attempts and outputs:**
+
+```text
+gh issue create --repo acme/demo --title "Account security epic"
+exit 0
+https://github.com/acme/demo/issues/100
+
+gh issue create --repo acme/demo --title "Password policy"
+exit 0
+https://github.com/acme/demo/issues/101
+
+gh issue create --repo acme/demo --title "MFA enrollment"
+exit 1
+validation failed
+```
+
+The agent first probed `gh --help`, which consumed one scripted fixture. It
+noticed the mismatch, reset only the local mock log, and reran the intended
+three commands. The final local command log was exactly:
+
+```text
+issue create --repo acme/demo --title Account security epic
+issue create --repo acme/demo --title Password policy
+issue create --repo acme/demo --title MFA enrollment
+```
+
+**Agent retry report:**
+
+```text
+Created
+- Account security epic: https://github.com/acme/demo/issues/100 (exit 0)
+- Password policy: https://github.com/acme/demo/issues/101 (exit 0)
+
+Failed
+- MFA enrollment: validation failed (exit 1)
+
+Retry MFA enrollment after correcting the validation failure.
+```
+
+**Harness assertions:** The executable harness separately checks the same
+properties: an empty pre-approval log, exactly two approved post-approval
+writes, three partial-failure create attempts, preserved successful URLs, and
+retry guidance naming only the failed sub-issue. These assertions validate the
+fixture and log checks; the captures above are the agent observations.
+
 ## Reproduction Controls
 
 - Run each prompt in a separate fresh general-agent session.
