@@ -36,8 +36,11 @@ labels, and bodies. Classify each match exactly as:
   related but distinct.
 - `no meaningful match`: proceed as a new candidate.
 
-Never treat an ambiguous match as a confirmed duplicate. Include all duplicate
-and related candidates in the approval plan.
+Never treat an ambiguous match as a confirmed duplicate. If targeted views do
+not resolve whether a candidate duplicates one or more existing issues, classify
+it as an ambiguous duplicate and map it explicitly to `skipped-ambiguous`: do
+not propose or publish it. Include the candidate, all possible issue URLs, and
+the unresolved reason in the plan.
 
 ## Grouping And Labels
 
@@ -68,8 +71,12 @@ priority and complexity rationale, labels to create or reuse, likely duplicates,
 related issues, and the exact publication scope (including what is excluded).
 
 Wait for **explicit approval** of the current plan. Revisions require a new
-current plan and approval. No `gh label create` or `gh issue create` command may
-run before explicit approval. Stop before publication if high-impact ambiguity
+current plan and approval. Before approval, every GitHub command and API call
+must be read-only. Do not run any mutating command or request, including `gh
+label create`, label edits or deletes, `gh issue create`, `gh issue edit`, issue
+deletes or closes, comments, or issue references (whether made with `gh api` or
+another `gh` subcommand). No mutation is allowed merely to probe, prepare,
+link, or validate a plan. Stop before publication if high-impact ambiguity
 remains unresolved.
 
 ## Issue Body Contract
@@ -106,10 +113,21 @@ After approval, execute exactly this order:
 4. Add issue references using GitHub issue references.
 5. Report URLs.
 
-Track results in four separate groups: `created`, `failed`, `skipped-duplicate`,
-and `skipped-ambiguous`. A failed command is never successful. Retain every
-created issue number and URL, even after a later failure, and give retry
-instructions only for failed items so successful issues are not duplicated.
+Track results in separate groups: `created`, `failed`, `skipped-duplicate`,
+`skipped-ambiguous`, and `skipped-dependency`. A failed command is never
+successful. If missing-label creation fails, mark the label failed and skip
+every item that requires it as `skipped-dependency`; do not publish those items.
+If an epic creation fails, mark the epic failed and skip all dependent
+sub-issues as `skipped-dependency`; independent standalone issues may proceed
+only if their own prerequisites succeeded. Report the prerequisite and reason
+for every dependency skip.
+
+Give every candidate and publication item a stable retry identity, such as its
+temporary candidate ID plus `epic`, `sub-issue`, or `standalone` role. Retain
+that identity, every created issue number and URL, and each failed prerequisite
+in the report. Retry only failed items and dependency-skipped items whose
+prerequisites now succeed; never retry or recreate a `created` item, and never
+silently turn a dependency skip into a success.
 
 ## Worked Example
 
