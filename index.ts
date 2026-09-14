@@ -82,11 +82,13 @@ export default async function OpencodeDevSkillsPlugin({ client }: any) {
         await log(client, "warn", `Update check failed: ${String(error)}`)
       }
     },
-    "experimental.chat.system.transform": async (_input: any, output: any) => {
-      if (Array.isArray(output?.system)) output.system.push(bootstrap)
-    },
     "experimental.chat.messages.transform": async (_input: any, output: any) => {
-      if (Array.isArray(output?.messages)) output.messages.unshift({ role: "system", content: bootstrap })
+      if (!Array.isArray(output?.messages) || output.messages.length === 0) return
+      const firstUser = output.messages.find((message: any) => message?.info?.role === "user")
+      if (!firstUser?.parts?.length) return
+      if (firstUser.parts.some((part: any) => part?.type === "text" && part.text?.includes("dev-orchestrator"))) return
+      const firstPart = firstUser.parts[0]
+      firstUser.parts.unshift({ ...firstPart, type: "text", text: bootstrap })
     },
   }
 }
