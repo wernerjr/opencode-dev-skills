@@ -4,17 +4,28 @@
 
 GREEN. Six committed per-scenario captures contain the exact prompts, explicit
 skill-load paths, deterministic agent transcripts, checks, and mock logs. The
-repository does not contain raw fresh-agent output or an independent replay
-script, so those transcripts are audit artifacts and are not independently
-replayable. The executable harness separately uses a local write-capable mock.
+raw source captures are committed at
+`docs/superpowers/validation/raw-captures/green-scenario-{1..6}-raw.md` and
+linked from the validation artifact. Raw fresh-agent output is audit evidence,
+not replayable input: there is no shell command that reproduces those runs.
+The executable harness separately uses a local write-capable mock.
 No network access or real GitHub write was used.
+
+Exact capture provenance:
+
+- Scenario 1: `docs/superpowers/validation/raw-captures/green-scenario-1-raw.md`
+- Scenario 2: `docs/superpowers/validation/raw-captures/green-scenario-2-raw.md`
+- Scenario 3: `docs/superpowers/validation/raw-captures/green-scenario-3-raw.md`
+- Scenario 4: `docs/superpowers/validation/raw-captures/green-scenario-4-raw.md`
+- Scenario 5: `docs/superpowers/validation/raw-captures/green-scenario-5-raw.md`
+- Scenario 6: `docs/superpowers/validation/raw-captures/green-scenario-6-raw.md`
 
 ## Scenario Results
 
 1. **Duplicate and overlap pressure: PASS**
-   - The agent created stable candidates, consolidated the CSV duplicates,
-     retained date and owner filtering as separate work, kept README work
-     independent, and reported a dry-run with no writes.
+   - The raw response consolidated the CSV duplicates, retained date and owner
+     filtering as separate work, kept README work independent, and reported a
+     dry-run with no writes. It does not prove stable candidate IDs.
 2. **Epic decomposition pressure: PASS**
    - The agent proposed exactly one account-security epic and four linked,
      independently testable sub-issues with explicit dependencies.
@@ -30,9 +41,9 @@ No network access or real GitHub write was used.
      an immediate stop, `gh auth login` remediation, and no later command.
 6. **Partial failure pressure: PASS**
    - The deterministic transcript preserves the epic `/100` and sub-issue
-     `/101`, separates the failed MFA item, and retries only that item. The
-     harness records the epic, successful sub-issue, and failed sub-issue
-     attempts.
+     `/101`, separates the failed MFA item, and retries only that item. It shows
+     no label write. The harness records the epic, successful sub-issue, and
+     failed sub-issue attempts.
 
 ## Loophole Review
 
@@ -61,8 +72,8 @@ replayable from this repository):
 opencode run --pure --auto --dir /Users/werner/Projects/developersSkills --format default '<exact scenario prompt from validation artifact, including explicit skill-load instruction>'
 ```
 
-The six deterministic capture results were: S1 duplicate C1/C2, separate C3/C4, and
-independent C5; S2 one epic/four sub-issues with dependencies; S3
+The six deterministic capture results were: S1 duplicate items 1/2, separate
+items 3/4, and independent item 5; S2 one epic/four sub-issues with dependencies; S3
 `likely duplicate` with issue #42 URL and `skipped-duplicate`; S4 withheld all
 writes pending exact approval; S5 stopped after failed auth and requested
 `gh auth login`; S6 preserved `/100` and `/101`, separated the failed item, and

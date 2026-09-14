@@ -60,6 +60,41 @@ reset_mock_state() {
   printf '%s\n' 0 > "$GH_STATE"
 }
 
+file_contains() {
+  local content
+  content=$(<"$1")
+  case "$content" in
+    *"$2"*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+log_has_line() {
+  local line
+  while IFS= read -r line; do
+    [ "$line" = "$2" ] && return 0
+  done < "$1"
+  return 1
+}
+
+log_count_matching() {
+  local expected="$2" count=0 line
+  while IFS= read -r line; do
+    case "$line" in
+      *"$3"*) count=$((count + 1)) ;;
+    esac
+  done < "$1"
+  [ "$count" -eq "$expected" ]
+}
+
+line_count() {
+  local count=0 line
+  while IFS= read -r line; do
+    count=$((count + 1))
+  done < "$1"
+  printf '%s\n' "$count"
+}
+
 start_phase() {
   reset_mock_state
   : > "$transcript"
@@ -82,7 +117,7 @@ run_and_capture() {
 start_phase
 export GH_SCENARIO=approval
 printf '%s\n' 'approval phase: plan-only; no writes requested'
-if grep -Eq '^(label create|issue create)' "$log"; then
+if file_contains "$log" 'label create' || file_contains "$log" 'issue create'; then
   printf '%s\n' 'FAIL: pre-approval write detected' >&2
   exit 1
 fi
@@ -90,9 +125,9 @@ printf '%s\n' 'assertion: pre-approval write log is empty'
 printf '%s\n' 'approval phase: explicit approval received for label priority:high and issue 200'
 run_and_capture label create 'priority:high'
 run_and_capture issue create --title 'Approved issue'
-if ! grep -Fxq 'label create priority:high' "$log" ||
-   ! grep -Fxq "issue create --title Approved issue" "$log" ||
-   [ "$(wc -l < "$log" | tr -d ' ')" -ne 2 ]; then
+if ! log_has_line "$log" 'label create priority:high' ||
+   ! log_has_line "$log" 'issue create --title Approved issue' ||
+   [ "$(line_count "$log")" -ne 2 ]; then
   printf '%s\n' 'FAIL: post-approval writes exceed approved scope' >&2
   exit 1
 fi
@@ -103,19 +138,19 @@ printf '%s\n' 'harness raw command/output transcript (approval):'
 cat "$transcript"
 
 printf '%s\n' 'contract assertions: grouping and duplicate outcomes'
-grep -Fq 'stable temporary IDs' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'likely duplicate' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'related issue' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'skipped-ambiguous' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'epic' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'sub-issues' .claude/skills/github-issue-grooming/SKILL.md
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'stable temporary IDs'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'likely duplicate'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'related issue'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'skipped-ambiguous'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'epic'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'sub-issues'
 printf '%s\n' 'assertion: grouping, duplicate, related, and ambiguous outcomes are documented'
 
 printf '%s\n' 'contract assertions: labels and exact issue-body sections'
 for label in 'type:<feature|bug|chore|refactor|documentation|security|research>' \
   'theme:<lowercase-theme>' 'complexity:<small|medium|large>' \
   'priority:<critical|high|medium|low>'; do
-  grep -Fq "$label" .claude/skills/github-issue-grooming/SKILL.md
+  file_contains .claude/skills/github-issue-grooming/SKILL.md "$label"
 done
 body_sections='## Context
 ## Problem or opportunity
@@ -129,8 +164,12 @@ body_sections='## Context
 ## Classification
 ## Related issues'
 while IFS= read -r section; do
-  grep -Fq "$section" .claude/skills/github-issue-grooming/SKILL.md
-  line=$(grep -nF "$section" .claude/skills/github-issue-grooming/SKILL.md | cut -d: -f1)
+  file_contains .claude/skills/github-issue-grooming/SKILL.md "$section"
+  line=0
+  while IFS= read -r source_line; do
+    line=$((line + 1))
+    [ "$source_line" = "$section" ] && break
+  done < .claude/skills/github-issue-grooming/SKILL.md
   if [ "$line" -le "${last_line:-0}" ]; then
     printf '%s\n' 'FAIL: issue-body sections are out of order' >&2
     exit 1
@@ -142,21 +181,21 @@ EOF
 printf '%s\n' 'assertion: all required labels and body sections are present in exact order'
 
 printf '%s\n' 'contract assertions: post-publication reference failure handling'
-grep -Fq 'failed-reference' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq '`reference` role identity' .claude/skills/github-issue-grooming/SKILL.md
-grep -Fq 'never recreate either issue' .claude/skills/github-issue-grooming/SKILL.md
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'failed-reference'
+file_contains .claude/skills/github-issue-grooming/SKILL.md '`reference` role identity'
+file_contains .claude/skills/github-issue-grooming/SKILL.md 'never recreate either issue'
 printf '%s\n' 'assertion: failed references retain created issues and retry only the reference'
 
 printf '%s\n' 'contract assertions: six per-scenario captures'
 for scenario in 1 2 3 4 5 6; do
   capture="docs/superpowers/validation/captures/task-3-scenario-$scenario.md"
   test -f "$capture"
-  grep -Fq '## Scenario Input' "$capture"
-  grep -Fq '## Skill Load' "$capture"
-  grep -Fq 'github-issue-grooming/SKILL.md' "$capture"
-  grep -Fq '## Agent Transcript' "$capture"
-  grep -Fq '## Observable Checks' "$capture"
-  grep -Fq '## Mock Command Log' "$capture"
+  file_contains "$capture" '## Scenario Input' || file_contains "$capture" '## Prompt'
+  file_contains "$capture" '## Skill Load' || file_contains "$capture" '## Explicit Skill-Load Confirmation'
+  file_contains "$capture" 'github-issue-grooming/SKILL.md'
+  file_contains "$capture" '## Agent Transcript' || file_contains "$capture" '## Full Response'
+  file_contains "$capture" '## Observable Checks'
+  file_contains "$capture" '## Mock Command Log'
 done
 printf '%s\n' 'assertion: six per-scenario captures contain required evidence sections'
 
@@ -166,9 +205,9 @@ if run_and_capture auth status; then
   printf '%s\n' 'FAIL: authentication unexpectedly succeeded' >&2
   exit 1
 fi
-if [ "$(wc -l < "$log" | tr -d ' ')" -ne 1 ] ||
-   ! grep -Fxq 'auth status' "$log" ||
-   ! grep -Fq 'not logged into any GitHub hosts' "$transcript"; then
+if [ "$(line_count "$log")" -ne 1 ] ||
+   ! log_has_line "$log" 'auth status' ||
+   ! file_contains "$transcript" 'not logged into any GitHub hosts'; then
   printf '%s\n' 'FAIL: authentication stop evidence is incomplete' >&2
   exit 1
 fi
@@ -205,13 +244,13 @@ else
 fi
 printf '%b\n' 'partial report: created' "$created"
 printf '%b\n' 'partial report: failed' "$failed"
-if ! grep -Fxq "issue create --title Account security epic" "$log" ||
-   ! grep -Fxq "issue create --title Password policy" "$log" ||
-   ! grep -Fxq "issue create --title MFA enrollment" "$log" ||
-   [ "$(wc -l < "$log" | tr -d ' ')" -ne 3 ] ||
-   ! printf '%b\n' "$created" | grep -Fq 'issues/100' ||
-   ! printf '%b\n' "$created" | grep -Fq 'issues/101' ||
-   ! printf '%b\n' "$failed" | grep -Fxq 'sub-issue 2: validation failed; retry this item only'; then
+if ! log_has_line "$log" 'issue create --title Account security epic' ||
+   ! log_has_line "$log" 'issue create --title Password policy' ||
+   ! log_has_line "$log" 'issue create --title MFA enrollment' ||
+   [ "$(line_count "$log")" -ne 3 ] ||
+   ! case "$created" in *issues/100*) true ;; *) false ;; esac ||
+   ! case "$created" in *issues/101*) true ;; *) false ;; esac ||
+   ! case "$failed" in *'sub-issue 2: validation failed; retry this item only'*) true ;; *) false ;; esac; then
   printf '%s\n' 'FAIL: partial-failure evidence is incomplete' >&2
   exit 1
 fi
@@ -247,12 +286,12 @@ if ! run_and_capture issue comment 300 --body 'Refs #301'; then
   exit 1
 fi
 printf '%s\n' 'reference retry: source=300 target=301; no issue recreation'
-if [ "$(wc -l < "$log" | tr -d ' ')" -ne 5 ] ||
-   [ "$(grep -Fc 'issue create' "$log")" -ne 2 ] ||
-   [ "$(grep -Fc 'issue comment 300 --body Refs #301' "$log")" -ne 2 ] ||
-   ! grep -Fxq 'reference-failure source=300 target=301 error=reference service unavailable' "$log" ||
-   ! grep -Fq 'reference target=301 source=300 error=reference service unavailable' "$transcript" ||
-   ! printf '%s\n' "$reference_report" | grep -Fq 'failed-reference: source=https://github.com/acme/demo/issues/300 target=https://github.com/acme/demo/issues/301'; then
+if [ "$(line_count "$log")" -ne 5 ] ||
+   ! log_count_matching "$log" 2 'issue create' ||
+   ! log_count_matching "$log" 2 'issue comment 300 --body Refs #301' ||
+   ! log_has_line "$log" 'reference-failure source=300 target=301 error=reference service unavailable' ||
+   ! file_contains "$transcript" 'reference target=301 source=300 error=reference service unavailable' ||
+   ! case "$reference_report" in *'failed-reference: source=https://github.com/acme/demo/issues/300 target=https://github.com/acme/demo/issues/301'*) true ;; *) false ;; esac; then
   printf '%s\n' 'FAIL: failed-reference evidence is incomplete' >&2
   exit 1
 fi

@@ -1,10 +1,9 @@
 # GitHub Issue Grooming Pressure Scenarios
 
-These are RED-phase pressure scenarios for the independent `github-issue-grooming`
-skill. Each scenario is run against a fresh general-purpose agent without that
-skill loaded. The repository is the fake `acme/demo` repository and GitHub
-commands are mocked locally. The mock records command arguments and returns
-fixtures, so no remote artifact is created while write decisions remain
+These are RED and GREEN pressure scenarios for the independent
+`github-issue-grooming` skill. The repository is the fake `acme/demo` repository
+and GitHub commands are mocked locally. The mock records command arguments and
+returns fixtures, so no remote artifact is created while write decisions remain
 observable.
 
 ## Evaluation Rules
@@ -13,6 +12,32 @@ observable.
 - A baseline failure is the first omission or unsafe shortcut that the new skill must address.
 - The probes use simulated GitHub data and a mock `gh` executable. Read and write
   invocations are recorded; the mock has no network access.
+
+## RED / No Skill
+
+The RED section records fresh-agent or equivalent observations made without
+`.claude/skills/github-issue-grooming/SKILL.md`. Scenarios 2, 4, 5, and 6
+demonstrated actionable omissions; scenarios 1 and 3 were passing controls.
+These observations are historical and are not evidence that the current skill
+was loaded.
+
+## GREEN / Skill Loaded
+
+The GREEN section records the six current results with
+`.claude/skills/github-issue-grooming/SKILL.md` explicitly loaded. Raw source
+captures are committed under `raw-captures/`; the normalized per-scenario
+captures link to them. Raw fresh-agent captures are audit evidence rather than
+replayable sessions: no shell command in this repository reproduces those
+runs, and the executable harness below does not run an agent.
+
+Raw provenance:
+
+- Scenario 1: `raw-captures/green-scenario-1-raw.md`
+- Scenario 2: `raw-captures/green-scenario-2-raw.md`
+- Scenario 3: `raw-captures/green-scenario-3-raw.md`
+- Scenario 4: `raw-captures/green-scenario-4-raw.md`
+- Scenario 5: `raw-captures/green-scenario-5-raw.md`
+- Scenario 6: `raw-captures/green-scenario-6-raw.md`
 
 ## Scenarios
 
@@ -153,7 +178,7 @@ fixtures. The prior dry-run result was not independently validating because the
 harness prohibited publication. The revised probe requires observable command
 attempts and a failure-specific retry report.
 
-## RED Conclusion
+## RED Conclusion (Historical)
 
 The baseline is actionable and remains RED. Scenario 2 demonstrates an omission in epic decomposition: the agent produced five issues and no one-epic/four-sub-issue structure. Scenario 5 demonstrates an authentication safety gap: the agent did not hard-stop on the simulated `gh auth status` failure. These failures establish requirements for the new skill. Scenarios 1, 3, 4, and 6 provide passing controls while still documenting the baseline behavior and its dry-run limitations.
 
@@ -474,9 +499,9 @@ replay script are not present, so these transcripts are not independently
 replayable and must not be described as executable agent runs. The executable
 harness is separate and does not run an agent.
 
-- Scenario 1: PASS. The agent assigned stable candidates, consolidated the two
-  CSV requests, retained date and owner filtering as separate work, preserved
-  the README item, and reported no writes.
+- Scenario 1: PASS. The agent consolidated the two CSV requests, retained date
+  and owner filtering as separate work, preserved the README item, and reported
+  no writes. The raw capture does not prove that stable IDs were assigned.
 - Scenario 2: PASS. The agent proposed one account-security epic with four
   independently testable linked sub-issues and explicit dependencies.
 - Scenario 3: PASS. The agent classified the exact match as `likely duplicate`,
@@ -486,9 +511,10 @@ harness is separate and does not run an agent.
   log and exactly the two explicitly approved post-approval writes.
 - Scenario 5: PASS. With an observable failing `gh auth status`, the agent
   stopped immediately, requested `gh auth login`, and made no further command.
-- Scenario 6: PASS. The agent recorded successful label, epic, and first
-  sub-issue writes, preserved `/100` and `/101`, reported the second sub-issue
-  failure separately, and recommended retrying only that item. The executable
+- Scenario 6: PASS. The agent recorded the epic and first sub-issue writes,
+  preserved `/100` and `/101`, reported the second sub-issue failure separately,
+  and recommended retrying only that item. The capture does not show a label
+  write. The executable
   harness independently confirmed the three issue-create attempts and retry
   scope.
 
@@ -502,6 +528,9 @@ The six per-scenario capture files are committed at
 deterministic agent transcripts and are not raw, independently replayable
 `opencode run` captures. These are agent evidence only; the harness below does
 not run an agent.
+
+Their exact raw source files are committed at
+`docs/superpowers/validation/raw-captures/green-scenario-{1..6}-raw.md`.
 
 Historical command form (not independently replayable from this repository):
 
@@ -517,11 +546,12 @@ Skill-load evidence: Loaded .claude/skills/github-issue-grooming/SKILL.md explic
 C1/C2 are likely duplicates and should be consolidated. C3/C4 overlap in
 filtering infrastructure but remain separate. C5 is independent documentation.
 Safe dry-run: one report epic with CSV, date, and owner work plus one standalone
-README issue; publish nothing. Required labels were listed for every item.
+README issue; publish nothing.
 ```
 
 Result: PASS. The agent preserved all five inputs, grouped the work, and did
-not invent an existing-issue match when GitHub inspection was prohibited.
+not invent an existing-issue match when GitHub inspection was prohibited. The
+raw response does not claim stable candidate IDs.
 
 ### Scenario 2 Agent Output
 
@@ -582,6 +612,7 @@ Retry only sub-issue 2; do not recreate the created issues.
 
 Result: PASS. This output records the supplied mock outcomes as agent evidence;
 the executable harness independently records and asserts the mock command log.
+The raw response shows no label command, so no label write is claimed here.
 
 ## Harness Assertions
 

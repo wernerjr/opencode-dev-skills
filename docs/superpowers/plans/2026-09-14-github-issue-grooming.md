@@ -31,6 +31,7 @@ Create:
 - `docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md`: reproducible prompts and expected observations for validating the skill without publishing real GitHub issues.
 - `docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: a committed, network-free local harness for write-observation and partial-failure assertions.
 - `docs/superpowers/validation/captures/task-3-scenario-{1..6}.md`: committed per-scenario audit captures with exact inputs, skill-load evidence, deterministic transcripts, checks, and mock logs.
+- `docs/superpowers/validation/raw-captures/green-scenario-{1..6}-raw.md`: committed raw fresh-agent source captures linked from the validation artifact; audit evidence only, not replayable sessions.
 
 Modify:
 
