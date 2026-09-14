@@ -141,7 +141,7 @@ claim that the link exists. Retry only that reference using its candidate and
 
 ## Worked Example
 
-Raw request: “Add password policy and MFA, with security docs.”
+Raw request: "Add password policy and MFA, with security docs."
 
 Plan: epic `Account security` (`type:feature`, `theme:account-security`,
 `complexity:large`, `priority:high`), plus two sub-issues:
@@ -160,7 +160,7 @@ its labels before creating missing labels or issues.
 ## Common Mistakes
 
 - Guessing repository identity or continuing after `gh auth status` fails.
-- Publishing before approval, including “just” labels.
+- Publishing before approval, including "just" labels.
 - Collapsing independently verifiable work into one issue instead of an epic.
 - Calling a related or ambiguous issue a duplicate.
 - Reporting a failed create as successful or losing URLs from partial publication.
