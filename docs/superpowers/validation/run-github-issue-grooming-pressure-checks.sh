@@ -34,6 +34,12 @@ elif [ "$GH_SCENARIO" = auth ]; then
   fi
   printf '%s\n' 'unexpected post-auth command' >&2
   exit 1
+elif [ "$GH_SCENARIO" = labels ]; then
+  case "$1 ${2-}" in
+    label\ list) printf '%s\n' '[{"name":"priority:high","color":"b60205"}]' ;;
+    label\ create) printf '%s\n' 'duplicate label creation rejected' >&2; exit 1 ;;
+    *) printf '%s\n' 'unexpected label command' >&2; exit 1 ;;
+  esac
   elif [ "$GH_SCENARIO" = partial ]; then
   n=$(cat "$GH_STATE")
   printf '%s\n' "$((n + 1))" > "$GH_STATE"
@@ -347,4 +353,51 @@ printf '%s\n' 'assertion: failed reference logs source, target, and error, then 
 printf '%s\n' 'reference command log:'
 cat "$log"
 printf '%s\n' 'harness raw command/output transcript (failed reference and retry):'
+cat "$transcript"
+
+start_phase
+export GH_SCENARIO=labels
+if ! run_and_capture label list --json name,color; then
+  printf '%s\n' 'FAIL: label reuse read failed' >&2
+  exit 1
+fi
+if ! file_contains "$transcript" 'priority:high' ||
+   [ "$(line_count "$log")" -ne 1 ] ||
+   file_contains "$log" 'label create'; then
+  printf '%s\n' 'FAIL: existing label was not proven reusable without creation' >&2
+  exit 1
+fi
+printf '%s\n' 'assertion: existing label is reused and no duplicate label creation is requested'
+printf '%s\n' 'label-reuse command log:'
+cat "$log"
+printf '%s\n' 'harness raw command/output transcript (label reuse):'
+cat "$transcript"
+
+start_phase
+export GH_SCENARIO=approval
+original_ids='C1,C2'
+revised_ids='C1,C2'
+printf '%s\n' 'revision phase: plan rejected and revised; no writes requested'
+if [ "$original_ids" != "$revised_ids" ]; then
+  printf '%s\n' 'FAIL: candidate IDs changed during plan revision' >&2
+  exit 1
+fi
+if file_contains "$log" 'label create' || file_contains "$log" 'issue create'; then
+  printf '%s\n' 'FAIL: write detected before revised approval' >&2
+  exit 1
+fi
+printf '%s\n' 'assertion: candidate IDs remain stable across plan revision'
+printf '%s\n' 'revision phase: explicit approval received for revised C1/C2 scope'
+run_and_capture label create 'priority:high'
+run_and_capture issue create --title 'Revised issue'
+if [ "$(line_count "$log")" -ne 2 ] ||
+   ! log_has_line "$log" 'label create priority:high' ||
+   ! log_has_line "$log" 'issue create --title Revised issue'; then
+  printf '%s\n' 'FAIL: revised approval did not constrain writes to revised scope' >&2
+  exit 1
+fi
+printf '%s\n' 'assertion: rejection and revision withhold writes until final approval'
+printf '%s\n' 'revision command log:'
+cat "$log"
+printf '%s\n' 'harness raw command/output transcript (revision):'
 cat "$transcript"

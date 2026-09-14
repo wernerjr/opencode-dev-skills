@@ -681,3 +681,24 @@ issue comment 300 --body Refs #301
 The first reference command exited 1 with `reference service unavailable`; the
 second command exited 0. The harness asserted that only the reference was
 retried and no issue was recreated.
+
+## Task 4 Review Gap Probes
+
+Task 3 review found that the skill text asserted label idempotency, plan
+revision safety, and stable candidate IDs, but the evidence did not execute or
+observe those behaviors. The local no-network harness now adds three probes:
+
+- **Existing-label reuse:** the mock returns `priority:high` from a label-list
+  read and rejects any `gh label create` command. The log assertion proves that
+  the existing label is reused without duplicate creation.
+- **Rejected and revised plan:** the harness records a plan-only phase, applies
+  a rejection and revision, and asserts that the write log remains empty until
+  the revised scope is explicitly approved. It then permits only the revised
+  label and issue writes.
+- **Candidate ID stability:** the harness carries `C1` and `C2` through the
+  original and revised plan fixtures and explicitly compares them. This proves
+  fixture ID stability only; it does not claim that the harness observed an
+  agent assigning IDs.
+
+These are executable harness assertions, not fresh-agent observations. They
+validate the local mock, command log, and documented contract only.

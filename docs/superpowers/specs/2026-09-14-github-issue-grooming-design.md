@@ -146,6 +146,12 @@ The skill should be tested with pressure scenarios covering:
 - a failure after the epic is created but before all sub-issues are published;
 - a user rejecting or revising the proposed plan.
 
+Validation must explicitly observe existing-label reuse without a duplicate
+label-create command, no writes between plan rejection and approval of the
+revised scope, and unchanged temporary candidate IDs across that revision.
+Harness-only checks must be labeled as harness evidence rather than fresh-agent
+behavior.
+
 The expected result is a deterministic, reviewable plan before writes and an accurate publication report after writes.
 
 ## Out of Scope for the First Version

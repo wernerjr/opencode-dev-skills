@@ -266,3 +266,10 @@ git show --stat --oneline HEAD
 
 Expected: the commit contains only the intended skill, plan, validation artifact,
 harness, captures, and Task 3 report; unrelated pre-existing files remain untouched.
+
+### Task 4 Review Gap Follow-up
+
+- [x] Add an executable existing-label fixture that rejects duplicate label creation.
+- [x] Add an executable rejection/revision phase proving no writes occur before approval of the revised scope.
+- [x] Add an explicit harness assertion that temporary candidate IDs remain stable across revision.
+- [x] Update the skill, specification coverage notes, validation artifact, and Task 4 report without claiming fresh-agent behavior for harness-only checks.

@@ -16,7 +16,9 @@ user's intent, do not invent requirements, and do not modify application code.
    published.
 3. Assign stable temporary IDs such as `C1`, `C2` to normalized candidates.
    Preserve each candidate's original wording and explain any consolidation,
-   omission, or ambiguity.
+   omission, or ambiguity. Assign each ID once at intake and carry it unchanged
+   through every plan revision, publication result, and retry; never renumber a
+   candidate because its grouping or wording changes.
 
 ## Search And Classification
 
@@ -59,9 +61,11 @@ complexity:<small|medium|large>
 priority:<critical|high|medium|low>
 ```
 
-Use existing labels when present. List missing labels and create them only after
-approval. Label colors must be stable by namespace, and label creation must be
-idempotent.
+Inspect the repository's existing labels before finalizing the plan, compare
+names exactly, and mark each required label as `reuse` or `create`. Existing
+labels are reused and must never receive a second `gh label create` request.
+List missing labels and create them only after approval. Label colors must be
+stable by namespace, and missing-label creation must be idempotent.
 
 ## Approval Gate
 
@@ -70,8 +74,10 @@ sub-issues, standalone issues, grouping, dependencies, classifications,
 priority and complexity rationale, labels to create or reuse, likely duplicates,
 related issues, and the exact publication scope (including what is excluded).
 
-Wait for **explicit approval** of the current plan. Revisions require a new
-current plan and approval. Before approval, every GitHub command and API call
+Wait for **explicit approval** of the current plan. A rejection or requested
+revision withdraws any earlier approval: show the revised plan with the same
+candidate IDs and wait for explicit approval of that exact revised scope.
+Before final approval, every GitHub command and API call
 must be read-only. Do not run any mutating command or request, including `gh
 label create`, label edits or deletes, `gh issue create`, `gh issue edit`, issue
 deletes or closes, comments, or issue references (whether made with `gh api` or
