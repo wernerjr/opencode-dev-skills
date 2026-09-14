@@ -20,17 +20,21 @@ created while write decisions remain observable.
 
 ## RED / No Skill
 
-The RED section records baseline observations made without
+The RED section records baseline expectations developed without
 `.claude/skills/security-prospector/SKILL.md`.
 
 Probe method: fresh general-purpose subagent dispatch was not available in
 this environment, so scenarios 1, 2, 3, 5, 7, and 8 were probed directly as
 labeled **direct roleplay probes**, simulating a general-purpose agent with no
-security skill. These are honest hypotheses about unspecialized baseline
-behavior, not independent fresh-agent transcripts; the GREEN phase must rerun
-every scenario against the real skill with fresh agents. Scenarios 4 and 6 use
-a local mock harness as separate command-assertion evidence and are not agent
-observations.
+security skill. The verbatim first-failure quotes and simulated outputs in
+those scenarios are author-illustrated hypotheses written by the implementer
+to make each expected failure concrete; they are roleplay, not independently
+observed baseline behavior, and must not be cited downstream as observed
+baseline output. The authoritative RED/GREEN gate is the Task 5 fresh-agent
+rerun of every scenario against the real skill, per
+`docs/superpowers/plans/2026-09-14-security-prospector.md`. Scenarios 4 and 6
+use a local mock harness as separate command-assertion evidence and are not
+agent observations.
 
 ### 1. SQL injection + stored XSS
 
@@ -272,8 +276,9 @@ failed item without recreating created ones.
 
 ## RED Conclusion
 
-The baseline is actionable and remains RED. Six of eight scenarios demonstrate
-omissions or unsafe shortcuts the new skill must address:
+The baseline as exercised here is actionable, but the RED verdict is a
+development expectation, not independent evidence. Six of eight scenarios
+identify omissions or unsafe shortcuts the new skill must address:
 
 - Scenario 1: invented severity/order and collapsed the `severity:*` and
   `priority:*` label namespaces.
@@ -287,9 +292,14 @@ omissions or unsafe shortcuts the new skill must address:
   sub-issues and had no `skipped-dependency` semantics.
 - Scenario 8: claimed false success and lost retry scope for the failed item.
 
-Scenarios 4 and 6 are pinned by harness mechanism evidence; the agent-behavior
-half of those requirements is a GREEN-phase assertion. These failures establish
-the requirements for the new skill and are the RED gate.
+For scenarios 1, 2, 3, 5, 7, and 8 the quoted first-failure outputs are
+author-illustrated hypotheses written by the implementer to pin each expected
+failure; they are roleplay probes, not independently observed baseline output
+from a fresh agent, and must not be cited downstream as such. Scenarios 4 and 6
+are pinned by harness mechanism evidence; the agent-behavior half of those
+requirements is a GREEN-phase assertion. None of this is the RED gate: the
+authoritative RED/GREEN gate is the Task 5 fresh-agent rerun of all eight
+scenarios against the real skill.
 
 ## Mock Harness Evidence (Scenarios 4 and 6)
 
@@ -307,6 +317,11 @@ Script stubs (behavior only; the executing file lives outside the repo):
   command exits 1 with `unauthenticated command rejected: <args>` and is still
   recorded.
 - Scenario 6: `gitleaks detect --report-format json` returns
+
+  > Note: `AKIAIOSFODNN7EXAMPLE` is the public AWS-documented example access key,
+  > not a live secret. The masking contract requires exactly the masked form
+  > (`AKIA****`) plus `file:line` in plans and issue bodies, never the raw value.
+
   `[{"RuleID":"aws-access-key","Description":"AWS Access Key","StartLine":3,"File":"config/prod.env","Secret":"AKIAIOSFODNN7EXAMPLE","Match":"AKIAIOSFODNN7EXAMPLE"}]`.
 
 Harness assertion output (verbatim):
@@ -359,12 +374,15 @@ These transcripts are harness evidence and are not observations of an agent.
 
 ## Direct Roleplay Evidence (Scenarios 1, 2, 3, 5, 7, 8)
 
-Each roleplay below preserves the prompt conditions and the simulated
-general-agent output. The observation is the quoted first unsafe shortcut;
-verdicts are assigned against the evaluation point. Fresh subagent dispatch was
-unavailable in this environment, so each observation is explicitly a **direct
-roleplay probe** and is not claimed as an independent fresh-agent session.
-No security skill was loaded, and the roleplays used only the local mocks.
+Each roleplay below preserves the prompt conditions and a simulated
+general-agent output. The quoted first unsafe shortcut and surrounding response
+text are **author-illustrated hypotheses** written by the implementer so each
+scenario pins an expected failure; they are not transcripts of, or
+independently observed output from, a fresh agent, and must not be cited
+downstream as observed baseline behavior. Verdicts are assigned against the
+evaluation point. Fresh subagent dispatch was unavailable in this environment,
+so each section is explicitly a **direct roleplay probe**. No security skill
+was loaded, and the roleplays used only the local mocks.
 
 ### Scenario 1 roleplay output
 
