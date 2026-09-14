@@ -30,6 +30,7 @@ Create:
 - `.claude/skills/github-issue-grooming/SKILL.md`: the complete discoverable skill, including triggers, workflow, safety gates, classification rules, issue body contract, `gh` command patterns, and publication report format.
 - `docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md`: reproducible prompts and expected observations for validating the skill without publishing real GitHub issues.
 - `docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: a committed, network-free local harness for write-observation and partial-failure assertions.
+- `docs/superpowers/validation/captures/task-3-scenario-{1..6}.md`: committed per-scenario audit captures with exact inputs, skill-load evidence, deterministic transcripts, checks, and mock logs.
 
 Modify:
 
@@ -184,7 +185,7 @@ Expected: all commands exit successfully.
 
 - [x] **Step 1: Run every scenario with the skill loaded**
 
-Use a fresh general subagent per scenario. Supply the same scenario text used for RED and load `.claude/skills/github-issue-grooming/SKILL.md`. Keep GitHub writes disabled or mocked. Record whether the output contains the required plan, labels, issue-body sections, duplicate handling, and failure report.
+Use a fresh general subagent per scenario when available. Supply the same scenario text used for RED and load `.claude/skills/github-issue-grooming/SKILL.md`. Keep GitHub writes disabled or mocked. Record whether the output contains the required plan, labels, issue-body sections, duplicate handling, and failure report. Preserve one committed capture per scenario; if raw fresh-agent output cannot be replayed independently, label the capture as a deterministic transcript and state that limitation.
 
 - [x] **Step 2: Compare each result with its pass criteria**
 
@@ -212,16 +213,18 @@ Expected: no whitespace errors; the skill remains concise enough to be loaded fr
 **Files:**
 - Modify: `.claude/skills/github-issue-grooming/SKILL.md`
 - Modify: `docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md`
+- Add: `docs/superpowers/validation/captures/task-3-scenario-{1..6}.md`
+- Modify: `docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`
 
 **Interfaces:**
 - Consumes: the validated skill and scenario results.
 - Produces: a clean commit containing only the new skill and its validation artifact.
 
-- [ ] **Step 1: Check spec coverage**
+- [x] **Step 1: Check spec coverage**
 
 Verify the implementation covers every specification section: intake, duplicate search, grouping, epic/sub-issue decomposition, four label namespaces, approval gate, issue body contract, publication order, partial-failure reporting, authentication safety, and explicit out-of-scope behavior.
 
-- [ ] **Step 2: Run the final repository checks**
+- [x] **Step 2: Run the final repository checks**
 
 Run:
 
@@ -230,24 +233,28 @@ git diff --check
 git status --short
 ```
 
-Expected: only the intended skill and validation files are uncommitted. Do not stage existing `.claude/`, `AGENTS.md`, `CLAUDE.md`, or other unrelated changes.
+Expected: only the intended skill, plan, report, validation, harness, and capture files are uncommitted. Do not stage existing `.claude/`, `AGENTS.md`, `CLAUDE.md`, or other unrelated changes.
 
-- [ ] **Step 3: Run GitNexus change detection before committing**
+- [x] **Step 3: Run GitNexus change detection before committing**
 
 Run `detect_changes({scope: "unstaged"})`. Because these are Markdown skill files and the repository has no indexed symbols, expect no affected application symbols or execution flows. Report any unexpected result before committing.
 
-- [ ] **Step 4: Commit the implementation**
+- [x] **Step 4: Commit the implementation**
 
 Run:
 
 ```bash
-git add .claude/skills/github-issue-grooming/SKILL.md docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md
-git commit -m "feat: add GitHub issue grooming skill"
+git add .claude/skills/github-issue-grooming/SKILL.md \
+  docs/superpowers/validation/github-issue-grooming-pressure-scenarios.md \
+  docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh \
+  docs/superpowers/validation/captures \
+  .superpowers/sdd/task-3-report.md
+git commit -m "test: close issue grooming evidence gaps"
 ```
 
-Expected: one commit containing only the new skill and its pressure-scenario validation document.
+Expected: one commit containing only the intended skill, plan, report, validation artifact, harness, and capture files.
 
-- [ ] **Step 5: Verify the committed state**
+- [x] **Step 5: Verify the committed state**
 
 Run:
 
@@ -256,4 +263,5 @@ git status --short
 git show --stat --oneline HEAD
 ```
 
-Expected: the commit contains the two intended files, and unrelated pre-existing files remain untouched.
+Expected: the commit contains only the intended skill, plan, validation artifact,
+harness, captures, and Task 3 report; unrelated pre-existing files remain untouched.

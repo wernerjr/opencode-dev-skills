@@ -26,16 +26,28 @@ elif [ "$GH_SCENARIO" = auth ]; then
   fi
   printf '%s\n' 'unexpected post-auth command' >&2
   exit 1
-elif [ "$GH_SCENARIO" = partial ]; then
+  elif [ "$GH_SCENARIO" = partial ]; then
   n=$(cat "$GH_STATE")
   printf '%s\n' "$((n + 1))" > "$GH_STATE"
   case "$n" in
     0) printf '%s\n' 'https://github.com/acme/demo/issues/100' ;;
     1) printf '%s\n' 'https://github.com/acme/demo/issues/101' ;;
     2) printf '%s\n' 'validation failed' >&2; exit 1 ;;
-    *) printf '%s\n' 'unexpected write' >&2; exit 1 ;;
+     *) printf '%s\n' 'unexpected write' >&2; exit 1 ;;
+   esac
+elif [ "$GH_SCENARIO" = reference ]; then
+  n=$(cat "$GH_STATE")
+  printf '%s\n' "$((n + 1))" > "$GH_STATE"
+  case "$n" in
+    0) printf '%s\n' 'https://github.com/acme/demo/issues/300' ;;
+    1) printf '%s\n' 'https://github.com/acme/demo/issues/301' ;;
+    2) printf '%s\n' 'reference-failure source=300 target=301 error=reference service unavailable' >> "$GH_LOG"
+       printf '%s\n' 'reference target=301 source=300 error=reference service unavailable' >&2
+       exit 1 ;;
+    3) printf '%s\n' 'reference added source=300 target=301' ;;
+    *) printf '%s\n' 'unexpected reference operation' >&2; exit 1 ;;
   esac
-fi
+  fi
 MOCK
 chmod +x "$mock"
 
@@ -135,6 +147,19 @@ grep -Fq '`reference` role identity' .claude/skills/github-issue-grooming/SKILL.
 grep -Fq 'never recreate either issue' .claude/skills/github-issue-grooming/SKILL.md
 printf '%s\n' 'assertion: failed references retain created issues and retry only the reference'
 
+printf '%s\n' 'contract assertions: six per-scenario captures'
+for scenario in 1 2 3 4 5 6; do
+  capture="docs/superpowers/validation/captures/task-3-scenario-$scenario.md"
+  test -f "$capture"
+  grep -Fq '## Scenario Input' "$capture"
+  grep -Fq '## Skill Load' "$capture"
+  grep -Fq 'github-issue-grooming/SKILL.md' "$capture"
+  grep -Fq '## Agent Transcript' "$capture"
+  grep -Fq '## Observable Checks' "$capture"
+  grep -Fq '## Mock Command Log' "$capture"
+done
+printf '%s\n' 'assertion: six per-scenario captures contain required evidence sections'
+
 start_phase
 export GH_SCENARIO=auth
 if run_and_capture auth status; then
@@ -195,4 +220,44 @@ printf '%s\n' 'assertion: retry report names only failed sub-issue 2'
 printf '%s\n' 'partial command log:'
 cat "$log"
 printf '%s\n' 'harness raw command/output transcript (partial failure):'
+cat "$transcript"
+
+start_phase
+export GH_SCENARIO=reference
+printf '%s\n' 'reference phase: publish two issues, then reference source 300 to target 301'
+if ! run_and_capture issue create --title 'Reference source'; then
+  printf '%s\n' 'FAIL: source issue creation failed' >&2
+  exit 1
+fi
+source_output=$(<"$root/last-output")
+if ! run_and_capture issue create --title 'Reference target'; then
+  printf '%s\n' 'FAIL: target issue creation failed' >&2
+  exit 1
+fi
+target_output=$(<"$root/last-output")
+if run_and_capture issue comment 300 --body 'Refs #301'; then
+  printf '%s\n' 'FAIL: first reference unexpectedly succeeded' >&2
+  exit 1
+fi
+reference_error=$(<"$root/last-output")
+reference_report="failed-reference: source=$source_output target=$target_output error=$reference_error"
+printf '%s\n' "$reference_report"
+if ! run_and_capture issue comment 300 --body 'Refs #301'; then
+  printf '%s\n' 'FAIL: reference-only retry failed' >&2
+  exit 1
+fi
+printf '%s\n' 'reference retry: source=300 target=301; no issue recreation'
+if [ "$(wc -l < "$log" | tr -d ' ')" -ne 5 ] ||
+   [ "$(grep -Fc 'issue create' "$log")" -ne 2 ] ||
+   [ "$(grep -Fc 'issue comment 300 --body Refs #301' "$log")" -ne 2 ] ||
+   ! grep -Fxq 'reference-failure source=300 target=301 error=reference service unavailable' "$log" ||
+   ! grep -Fq 'reference target=301 source=300 error=reference service unavailable' "$transcript" ||
+   ! printf '%s\n' "$reference_report" | grep -Fq 'failed-reference: source=https://github.com/acme/demo/issues/300 target=https://github.com/acme/demo/issues/301'; then
+  printf '%s\n' 'FAIL: failed-reference evidence is incomplete' >&2
+  exit 1
+fi
+printf '%s\n' 'assertion: failed reference logs source, target, and error, then retries reference only'
+printf '%s\n' 'reference command log:'
+cat "$log"
+printf '%s\n' 'harness raw command/output transcript (failed reference and retry):'
 cat "$transcript"

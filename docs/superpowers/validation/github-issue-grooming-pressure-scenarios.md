@@ -467,9 +467,12 @@ The following checks were rerun after the evidence and plan updates:
 
 ## GREEN Validation Run
 
-Task 3 reran all six scenarios in fresh disposable repositories with
-`.claude/skills/github-issue-grooming/SKILL.md` loaded. Each repository used a
-local `gh` mock; no network access or real GitHub mutation was possible.
+The six committed capture artifacts under `captures/` preserve the exact
+scenario inputs, explicit skill-load paths, deterministic agent transcripts,
+scenario checks, and relevant mock logs. Raw fresh-agent session output and a
+replay script are not present, so these transcripts are not independently
+replayable and must not be described as executable agent runs. The executable
+harness is separate and does not run an agent.
 
 - Scenario 1: PASS. The agent assigned stable candidates, consolidated the two
   CSV requests, retained date and owner filtering as separate work, preserved
@@ -489,20 +492,18 @@ local `gh` mock; no network access or real GitHub mutation was possible.
   harness independently confirmed the three issue-create attempts and retry
   scope.
 
-No real loophole was demonstrated, so the skill was not modified. The prior RED
-observations remain historical evidence; the six current results are GREEN.
+The prior RED observations remain historical evidence; the six current
+deterministic results are GREEN subject to the evidence limitation above.
 
 ## Auditable GREEN Agent Captures
 
-Six independent fresh `opencode run` sessions were executed on 2026-09-14.
-Each command used `--pure --auto --format default`, was given the corresponding
-scenario prompt above, and explicitly required loading
-`.claude/skills/github-issue-grooming/SKILL.md`. The sessions were instructed
-not to modify files or contact real GitHub. These are agent observations, not
-harness assertions; the harness below does not run an agent.
+The six per-scenario capture files are committed at
+`docs/superpowers/validation/captures/task-3-scenario-{1..6}.md`. They contain
+deterministic agent transcripts and are not raw, independently replayable
+`opencode run` captures. These are agent evidence only; the harness below does
+not run an agent.
 
-Command form used for each session (with the scenario-specific prompt supplied
-as the final argument):
+Historical command form (not independently replayable from this repository):
 
 ```text
 opencode run --pure --auto --dir /Users/werner/Projects/developersSkills \
@@ -594,9 +595,10 @@ It passed assertions for grouping and duplicate/related/ambiguous outcomes,
 all four label namespaces, exact issue-body section order, empty pre-approval
 writes, exact post-approval write scope, authentication stop, partial-failure
 ordering and URLs, failed-item-only retry, and post-publication
-`failed-reference` retry behavior. Its raw approval, authentication, and
-partial-failure command/output logs are emitted by the command above and are
-harness evidence only. `bash -n` and `git diff --check` also passed.
+`failed-reference` retry behavior. Its raw approval, authentication,
+partial-failure, and failed-reference command/output logs are emitted by the
+command above and are harness evidence only. `bash -n` and `git diff --check`
+also passed.
 
 The latest harness assertion output was:
 
@@ -609,4 +611,19 @@ assertion: failed references retain created issues and retry only the reference
 assertion: auth failure stops before repo, issue, label, or publication commands
 assertion: log has epic, successful sub-issue, and failed sub-issue attempts
 assertion: retry report names only failed sub-issue 2
+assertion: failed reference logs source, target, and error, then retries reference only
 ```
+
+The failed-reference harness output also recorded this exact command sequence:
+
+```text
+issue create --title Reference source
+issue create --title Reference target
+issue comment 300 --body Refs #301
+reference-failure source=300 target=301 error=reference service unavailable
+issue comment 300 --body Refs #301
+```
+
+The first reference command exited 1 with `reference service unavailable`; the
+second command exited 0. The harness asserted that only the reference was
+retried and no issue was recreated.
