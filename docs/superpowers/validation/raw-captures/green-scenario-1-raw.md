@@ -1,5 +1,14 @@
 # Green Scenario 1 Raw Capture
 
+## Provenance
+
+- Scenario number: 1
+- Fresh-agent session ID: `ses_f5e9f4425ffe4K36KboH7wmFad`
+- Skill path loaded: `.claude/skills/github-issue-grooming/SKILL.md`
+- Capture path: `docs/superpowers/validation/raw-captures/green-scenario-1-raw.md`
+- Controller result: `PASS`
+- Artifact status: agent-produced audit artifact; not independently replayable.
+
 ## Prompt
 
 > You are a fresh general-purpose coding agent. No github-issue-grooming skill is loaded. In a fake repository acme/demo, with GitHub commands mocked locally, analyze this request: five improvements: (1) add CSV export to reports, (2) export reports as CSV, (3) add report filtering by date, (4) add report filtering by owner, (5) update the README installation example. Identify duplicates and overlapping-but-separate work, and propose a safe dry-run plan. Use the local mock; do not contact GitHub. Keep your answer concise. Explicitly quote the first omission or unsafe shortcut you would make under time pressure, if any; if none, say NONE.

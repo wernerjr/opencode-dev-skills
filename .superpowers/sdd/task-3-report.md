@@ -13,12 +13,16 @@ No network access or real GitHub write was used.
 
 Exact capture provenance:
 
-- Scenario 1: `docs/superpowers/validation/raw-captures/green-scenario-1-raw.md`
-- Scenario 2: `docs/superpowers/validation/raw-captures/green-scenario-2-raw.md`
-- Scenario 3: `docs/superpowers/validation/raw-captures/green-scenario-3-raw.md`
-- Scenario 4: `docs/superpowers/validation/raw-captures/green-scenario-4-raw.md`
-- Scenario 5: `docs/superpowers/validation/raw-captures/green-scenario-5-raw.md`
-- Scenario 6: `docs/superpowers/validation/raw-captures/green-scenario-6-raw.md`
+- Scenario 1: session `ses_f5e9f4425ffe4K36KboH7wmFad`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-1-raw.md); controller result: `PASS`.
+- Scenario 2: session `ses_f5e9f43f5ffe90sBvkZ0KXcnPR`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-2-raw.md); controller result: `PASS`.
+- Scenario 3: session `ses_f5e9f43ccffeq9lvDITEtOWsag`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-3-raw.md); controller result: `PASS`.
+- Scenario 4: session `ses_f5e9f43beffe3Y680rYdxZr6vt`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-4-raw.md); controller result: `PASS`.
+- Scenario 5: session `ses_f5e9f43afffe823rXmrUXRa6J8`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-5-raw.md); controller result: `PASS`.
+- Scenario 6: session `ses_f5e9f43a8ffeUPbT4ykP1jl6aO`; skill `.claude/skills/github-issue-grooming/SKILL.md`; [raw capture](../../docs/superpowers/validation/raw-captures/green-scenario-6-raw.md); controller result: `PASS`.
+
+Each linked raw capture is an agent-produced audit artifact and is not
+independently replayable. The captures do not claim timestamps or raw logs
+that are not present. Harness evidence remains separate and intact.
 
 ## Scenario Results
 
@@ -62,6 +66,9 @@ changing.
 - `wc -w .claude/skills/github-issue-grooming/SKILL.md`: 971 words.
 - Placeholder review for `TODO`, `FIXME`, `TBD`, and unfinished markers: PASS.
 - Six capture review: PASS; each committed capture contains the exact scenario input, explicit skill-load path, deterministic transcript, observable checks, and mock log. Captures are not independently replayable fresh-agent sessions.
+- Provenance metadata review: PASS; all six normalized and raw captures contain the exact scenario number, supplied fresh-agent session ID, loaded skill path, capture path, `PASS` controller result, and explicit agent-produced/non-replayable audit-artifact label.
+- Normalized-to-raw link review: PASS; every normalized scenario entry links directly to its corresponding raw capture.
+- Harness separation review: PASS; harness evidence remains separate and no timestamp or unavailable raw log is claimed.
 
 ## Exact Rerun Commands
 

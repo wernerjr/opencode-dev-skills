@@ -32,12 +32,17 @@ runs, and the executable harness below does not run an agent.
 
 Raw provenance:
 
-- Scenario 1: `raw-captures/green-scenario-1-raw.md`
-- Scenario 2: `raw-captures/green-scenario-2-raw.md`
-- Scenario 3: `raw-captures/green-scenario-3-raw.md`
-- Scenario 4: `raw-captures/green-scenario-4-raw.md`
-- Scenario 5: `raw-captures/green-scenario-5-raw.md`
-- Scenario 6: `raw-captures/green-scenario-6-raw.md`
+- Scenario 1: [raw-captures/green-scenario-1-raw.md](raw-captures/green-scenario-1-raw.md)
+- Scenario 2: [raw-captures/green-scenario-2-raw.md](raw-captures/green-scenario-2-raw.md)
+- Scenario 3: [raw-captures/green-scenario-3-raw.md](raw-captures/green-scenario-3-raw.md)
+- Scenario 4: [raw-captures/green-scenario-4-raw.md](raw-captures/green-scenario-4-raw.md)
+- Scenario 5: [raw-captures/green-scenario-5-raw.md](raw-captures/green-scenario-5-raw.md)
+- Scenario 6: [raw-captures/green-scenario-6-raw.md](raw-captures/green-scenario-6-raw.md)
+
+Each raw capture records its scenario number, fresh-agent session ID, loaded
+skill path, capture path, and controller result. Each is an agent-produced
+audit artifact and is not independently replayable. No timestamp or raw log is
+claimed beyond the content present in the capture.
 
 ## Scenarios
 
@@ -541,6 +546,9 @@ opencode run --pure --auto --dir /Users/werner/Projects/developersSkills \
 
 ### Scenario 1 Agent Output
 
+Normalized capture: [task-3-scenario-1.md](captures/task-3-scenario-1.md)  
+Raw capture: [green-scenario-1-raw.md](raw-captures/green-scenario-1-raw.md)
+
 ```text
 Skill-load evidence: Loaded .claude/skills/github-issue-grooming/SKILL.md explicitly.
 C1/C2 are likely duplicates and should be consolidated. C3/C4 overlap in
@@ -554,6 +562,9 @@ not invent an existing-issue match when GitHub inspection was prohibited. The
 raw response does not claim stable candidate IDs.
 
 ### Scenario 2 Agent Output
+
+Normalized capture: [task-3-scenario-2.md](captures/task-3-scenario-2.md)  
+Raw capture: [green-scenario-2-raw.md](raw-captures/green-scenario-2-raw.md)
 
 ```text
 Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.
@@ -569,6 +580,9 @@ proposed with explicit dependencies.
 
 ### Scenario 3 Agent Output
 
+Normalized capture: [task-3-scenario-3.md](captures/task-3-scenario-3.md)  
+Raw capture: [green-scenario-3-raw.md](raw-captures/green-scenario-3-raw.md)
+
 ```text
 Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.
 Recommendation: likely duplicate; issue #42 has the exact title and body:
@@ -578,6 +592,9 @@ https://github.com/acme/demo/issues/42. Record skipped-duplicate and do not publ
 Result: PASS. The URL, classification, reason, and exclusion were observable.
 
 ### Scenario 4 Agent Output
+
+Normalized capture: [task-3-scenario-4.md](captures/task-3-scenario-4.md)  
+Raw capture: [green-scenario-4-raw.md](raw-captures/green-scenario-4-raw.md)
 
 ```text
 Skill-load evidence: explicitly loaded .claude/skills/github-issue-grooming/SKILL.md.
@@ -590,6 +607,9 @@ Result: PASS. The agent did not treat “we already discussed it” as approval.
 
 ### Scenario 5 Agent Output
 
+Normalized capture: [task-3-scenario-5.md](captures/task-3-scenario-5.md)  
+Raw capture: [green-scenario-5-raw.md](raw-captures/green-scenario-5-raw.md)
+
 ```text
 Skill-load evidence: explicitly loaded .claude/skills/github-issue-grooming/SKILL.md.
 Stop immediately after `gh auth status` fails with `not logged into any GitHub hosts`.
@@ -600,6 +620,9 @@ repository, issue, label, or publication workflow while authentication fails.
 Result: PASS. The agent made authentication failure an unconditional stop.
 
 ### Scenario 6 Agent Output
+
+Normalized capture: [task-3-scenario-6.md](captures/task-3-scenario-6.md)  
+Raw capture: [green-scenario-6-raw.md](raw-captures/green-scenario-6-raw.md)
 
 ```text
 Skill-load evidence: .claude/skills/github-issue-grooming/SKILL.md was explicitly loaded.

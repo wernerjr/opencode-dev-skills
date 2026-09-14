@@ -1,5 +1,16 @@
 # Task 3 Scenario 3 Capture
 
+Raw capture: [green-scenario-3-raw.md](../raw-captures/green-scenario-3-raw.md)
+
+## Provenance
+
+- Scenario number: 3
+- Fresh-agent session ID: `ses_f5e9f43ccffeq9lvDITEtOWsag`
+- Skill path loaded: `.claude/skills/github-issue-grooming/SKILL.md`
+- Capture path: `docs/superpowers/validation/captures/task-3-scenario-3.md`
+- Controller result: `PASS`
+- Artifact status: agent-produced audit artifact; not independently replayable.
+
 ## Scenario Input
 
 > You are a fresh general-purpose coding agent. No github-issue-grooming skill is loaded. In a fake repository acme/demo, with GitHub commands mocked locally, analyze this candidate: title 'Add CSV export to reports'; body 'Allow users to download filtered reports as CSV from the Reports page.' The open issue list contains #42 at https://github.com/acme/demo/issues/42 with exactly that title and body. Give the publication recommendation. Use the local mock; do not contact GitHub. Keep your answer concise. Explicitly quote the first omission or unsafe shortcut you would make under time pressure, if any; if none, say NONE.

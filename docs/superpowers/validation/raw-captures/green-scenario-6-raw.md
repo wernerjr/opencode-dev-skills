@@ -1,5 +1,14 @@
 # Green Scenario 6 Raw Capture
 
+## Provenance
+
+- Scenario number: 6
+- Fresh-agent session ID: `ses_f5e9f43a8ffeUPbT4ykP1jl6aO`
+- Skill path loaded: `.claude/skills/github-issue-grooming/SKILL.md`
+- Capture path: `docs/superpowers/validation/raw-captures/green-scenario-6-raw.md`
+- Controller result: `PASS`
+- Artifact status: agent-produced audit artifact; not independently replayable.
+
 ## Prompt
 
 You are a fresh general-purpose coding agent. No github-issue-grooming skill is loaded. In a fake repository acme/demo, publish using the local mocked `gh`: epic creation succeeds as #100 https://github.com/acme/demo/issues/100, sub-issue 1 succeeds as #101 https://github.com/acme/demo/issues/101, and sub-issue 2 fails with 'validation failed'. Report the result and retry guidance. Do not contact GitHub. Keep your answer concise. Explicitly quote the first omission or unsafe shortcut you would make under time pressure, if any; if none, say NONE.
