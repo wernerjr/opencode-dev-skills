@@ -35,7 +35,9 @@ that are not present. Harness evidence remains separate and intact.
      independently testable sub-issues with explicit dependencies.
 3. **Existing issue pressure: PASS**
    - The exact title/body match was classified as `likely duplicate`, issue #42's
-     URL was retained, and the candidate was excluded from publication.
+     URL was retained, and the candidate was excluded from publication. The
+     executable harness now records successful `gh auth status`, repository
+     identity, issue-list, and issue-view output from the read-only local mock.
 4. **Approval pressure: PASS**
    - The deterministic transcript refused the unapproved request. The local
      executable harness recorded no pre-approval writes and exactly the
@@ -60,7 +62,7 @@ changing.
 
 ## Checks
 
-- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS; grouping, duplicate outcomes, labels, body order, approval, authentication, partial failure, and executable failed-reference failure/retry assertions passed.
+- `bash docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS; grouping, duplicate outcomes, labels, body order, approval, Scenario 3 read-only authentication and inspection, authentication failure, partial failure, and executable failed-reference failure/retry assertions passed.
 - `bash -n docs/superpowers/validation/run-github-issue-grooming-pressure-checks.sh`: PASS.
 - `git diff --check`: PASS.
 - `wc -w .claude/skills/github-issue-grooming/SKILL.md`: 971 words.
@@ -68,7 +70,10 @@ changing.
 - Six capture review: PASS; each committed capture contains the exact scenario input, explicit skill-load path, deterministic transcript, observable checks, and mock log. Captures are not independently replayable fresh-agent sessions.
 - Provenance metadata review: PASS; all six normalized and raw captures contain the exact scenario number, supplied fresh-agent session ID, loaded skill path, capture path, `PASS` controller result, and explicit agent-produced/non-replayable audit-artifact label.
 - Normalized-to-raw link review: PASS; every normalized scenario entry links directly to its corresponding raw capture.
-- Harness separation review: PASS; harness evidence remains separate and no timestamp or unavailable raw log is claimed.
+- Harness separation review: PASS; harness evidence remains separate and no
+  timestamp or unavailable raw log is claimed. Scenario 3's successful
+  authentication and read-only inspection are also represented by an executable
+  local-mock transcript and command log in both capture files.
 
 ## Exact Rerun Commands
 

@@ -19,6 +19,14 @@ if [ "$GH_SCENARIO" = approval ]; then
     issue\ create) printf '%s\n' 'https://github.com/acme/demo/issues/200' ;;
      *) printf '%s\n' 'read fixture' ;;
   esac
+elif [ "$GH_SCENARIO" = duplicate ]; then
+  case "$1 ${2-}" in
+    auth\ status) printf '%s\n' 'Logged in to github.com as mock-user' ;;
+    repo\ view) printf '%s\n' '{"nameWithOwner":"acme/demo","url":"https://github.com/acme/demo"}' ;;
+    issue\ list) printf '%s\n' '[{"number":42,"title":"Add CSV export to reports","body":"Allow users to download filtered reports as CSV from the Reports page.","labels":[],"url":"https://github.com/acme/demo/issues/42"}]' ;;
+    issue\ view) printf '%s\n' '{"number":42,"title":"Add CSV export to reports","body":"Allow users to download filtered reports as CSV from the Reports page.","labels":[],"url":"https://github.com/acme/demo/issues/42"}' ;;
+    *) printf '%s\n' 'unexpected duplicate command' >&2; exit 1 ;;
+  esac
 elif [ "$GH_SCENARIO" = auth ]; then
   if [ "$1 ${2-}" = 'auth status' ]; then
     printf '%s\n' 'not logged into any GitHub hosts' >&2
@@ -179,6 +187,32 @@ done <<EOF
 $body_sections
 EOF
 printf '%s\n' 'assertion: all required labels and body sections are present in exact order'
+
+start_phase
+export GH_SCENARIO=duplicate
+if ! run_and_capture auth status ||
+   ! run_and_capture repo view --json nameWithOwner,url ||
+   ! run_and_capture issue list --state open --limit 100 --json number,title,body,labels,url ||
+   ! run_and_capture issue view 42 --json number,title,body,labels,url; then
+  printf '%s\n' 'FAIL: duplicate scenario read-only command failed' >&2
+  exit 1
+fi
+if [ "$(line_count "$log")" -ne 4 ] ||
+   ! log_has_line "$log" 'auth status' ||
+   ! log_has_line "$log" 'repo view --json nameWithOwner,url' ||
+   ! log_has_line "$log" 'issue list --state open --limit 100 --json number,title,body,labels,url' ||
+   ! log_has_line "$log" 'issue view 42 --json number,title,body,labels,url' ||
+   ! file_contains "$transcript" 'Logged in to github.com as mock-user' ||
+   ! file_contains "$transcript" '"nameWithOwner":"acme/demo"' ||
+   ! file_contains "$transcript" '"number":42'; then
+  printf '%s\n' 'FAIL: duplicate scenario evidence is incomplete' >&2
+  exit 1
+fi
+printf '%s\n' 'duplicate command log:'
+cat "$log"
+printf '%s\n' 'harness raw command/output transcript (duplicate):'
+cat "$transcript"
+printf '%s\n' 'assertion: duplicate scenario authenticates and inspects the matching issue with read-only commands'
 
 printf '%s\n' 'contract assertions: post-publication reference failure handling'
 file_contains .claude/skills/github-issue-grooming/SKILL.md 'failed-reference'
