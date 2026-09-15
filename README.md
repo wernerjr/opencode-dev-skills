@@ -10,6 +10,16 @@ An OpenCode plugin for issue-driven development:
 
 The plugin registers its bundled `skills/` directory through the OpenCode config hook. It does not require a local symlink or copying folders into a global skills directory.
 
+## Claude Skills
+
+This repository also hosts Claude-style skills under `.claude/skills/`:
+
+- `github-issue-grooming` — turns free-form improvement lists into a reviewable, publishable issue plan.
+- `security-prospector` — scans for security findings and integrates with the dev-orchestrator workflow.
+- `gitnexus/` — GitNexus CLI/exploring/impact/refactoring skills for Claude sessions.
+
+Specs, plans, and validation captures live under `docs/superpowers/`.
+
 ## Prerequisites
 
 - A recent OpenCode release
