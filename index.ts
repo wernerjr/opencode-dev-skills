@@ -3,7 +3,7 @@ import { promisify } from "node:util"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { homedir } from "node:os"
-import { rm } from "node:fs/promises"
+import { rm, readdir } from "node:fs/promises"
 
 const execFileAsync = promisify(execFile)
 const packageDirectory = dirname(fileURLToPath(import.meta.url))
@@ -47,12 +47,15 @@ async function notify(client: any, message: string) {
 }
 
 async function clearPluginCache(client: any) {
-  const cacheRoot = join(homedir(), ".cache", "opencode", "node_modules")
-  const candidates = [
-    join(cacheRoot, "opencode-dev-skills"),
-    join(cacheRoot, "opencode-dev-skills@git+https-github-com-wernerjr-opencode-dev-skills-git"),
-  ]
-  for (const candidate of candidates) {
+  const cacheRoot = join(homedir(), ".cache", "opencode", "packages")
+  let entries: string[] = []
+  try {
+    entries = (await readdir(cacheRoot)).filter((entry) => entry.startsWith("opencode-dev-skills@"))
+  } catch (error) {
+    await log(client, "warn", `Could not list plugin cache at ${cacheRoot}: ${String(error)}`)
+  }
+  for (const entry of entries) {
+    const candidate = join(cacheRoot, entry)
     try {
       await rm(candidate, { recursive: true, force: true })
     } catch (error) {
