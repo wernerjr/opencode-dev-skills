@@ -1,0 +1,27 @@
+{
+  "scanners": {
+    "gitnexus": [
+      { "category": "sql-injection", "file": "src/db.ts", "line": 9, "summary": "Concatenated SQL in listUsers query", "evidence": "db.query('SELECT * FROM users WHERE role=' + role)", "reachable": true },
+      { "category": "sql-injection", "file": "src/db.ts", "line": 21, "summary": "Concatenated SQL in getUserById query", "evidence": "db.query('SELECT * FROM users WHERE id=' + id)", "reachable": true },
+      { "category": "sql-injection", "file": "src/db.ts", "line": 40, "summary": "Concatenated SQL in createUser INSERT", "evidence": "db.query('INSERT INTO users (email) VALUES (' + email + ')')", "reachable": true },
+      { "category": "sql-injection", "file": "src/db.ts", "line": 62, "summary": "Concatenated SQL in updateUser query", "evidence": "db.query('UPDATE users SET role=' + role)", "reachable": true },
+      { "category": "sql-injection", "file": "src/db.ts", "line": 90, "summary": "Concatenated SQL in deleteUser query", "evidence": "db.query('DELETE FROM users WHERE id=' + id)", "reachable": true },
+      { "category": "sql-injection", "file": "src/repo.ts", "line": 12, "summary": "Concatenated SQL in syncRepos query", "evidence": "db.query('SELECT * FROM repos WHERE owner=' + owner)", "reachable": true },
+      { "category": "sql-injection", "file": "src/repo.ts", "line": 34, "summary": "Concatenated SQL in forkRepo query", "evidence": "db.query('SELECT * FROM repos WHERE source=' + source)", "reachable": true },
+      { "category": "sql-injection", "file": "src/repo.ts", "line": 55, "summary": "Concatenated SQL in starRepo query", "evidence": "db.query('SELECT * FROM repos WHERE id=' + repoId)", "reachable": true },
+      { "category": "sql-injection", "file": "src/search.ts", "line": 15, "summary": "Concatenated SQL in searchIssue query", "evidence": "db.query('SELECT * FROM issues WHERE term LIKE %' + term)", "reachable": true },
+      { "category": "sql-injection", "file": "src/search.ts", "line": 38, "summary": "Concatenated SQL in searchCode query", "evidence": "db.query('SELECT * FROM code WHERE term LIKE %' + term)", "reachable": true },
+      { "category": "sql-injection", "file": "src/search.ts", "line": 51, "summary": "Concatenated SQL in fullText search query", "evidence": "db.query('SELECT * FROM index WHERE query=' + q)", "reachable": true }
+    ],
+    "audit": null,
+    "gitleaks": null,
+    "semgrep": null
+  },
+  "skipped": {
+    "audit": "no lockfile",
+    "gitleaks": "gitleaks not installed",
+    "semgrep": "semgrep not installed"
+  },
+  "existingLabels": [],
+  "openIssues": []
+}

@@ -1,3 +1,9 @@
-node_modules/
+# OS / editor
 .DS_Store
 *.log
+
+# Dependencies
+node_modules/
+
+# Generated tool indexes
+.gitnexus/

@@ -1,0 +1,283 @@
+{
+  "deterministic": true,
+  "order": "severity desc, file asc, line asc",
+  "skipped": {
+    "audit": "no lockfile",
+    "gitleaks": "gitleaks not installed",
+    "semgrep": "semgrep not installed"
+  },
+  "findings": [
+    {
+      "findingId": "F1",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "line": 9,
+      "summary": "Concatenated SQL in listUsers query",
+      "evidence": "db.query('SELECT * FROM users WHERE role=' + role)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F2",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "line": 21,
+      "summary": "Concatenated SQL in getUserById query",
+      "evidence": "db.query('SELECT * FROM users WHERE id=' + id)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F3",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "line": 40,
+      "summary": "Concatenated SQL in createUser INSERT",
+      "evidence": "db.query('INSERT INTO users (email) VALUES (' + email + ')')",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F4",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "line": 62,
+      "summary": "Concatenated SQL in updateUser query",
+      "evidence": "db.query('UPDATE users SET role=' + role)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F5",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "line": 90,
+      "summary": "Concatenated SQL in deleteUser query",
+      "evidence": "db.query('DELETE FROM users WHERE id=' + id)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F6",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/repo.ts",
+      "line": 12,
+      "summary": "Concatenated SQL in syncRepos query",
+      "evidence": "db.query('SELECT * FROM repos WHERE owner=' + owner)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F7",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/repo.ts",
+      "line": 34,
+      "summary": "Concatenated SQL in forkRepo query",
+      "evidence": "db.query('SELECT * FROM repos WHERE source=' + source)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F8",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/repo.ts",
+      "line": 55,
+      "summary": "Concatenated SQL in starRepo query",
+      "evidence": "db.query('SELECT * FROM repos WHERE id=' + repoId)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F9",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/search.ts",
+      "line": 15,
+      "summary": "Concatenated SQL in searchIssue query",
+      "evidence": "db.query('SELECT * FROM issues WHERE term LIKE %' + term)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F10",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/search.ts",
+      "line": 38,
+      "summary": "Concatenated SQL in searchCode query",
+      "evidence": "db.query('SELECT * FROM code WHERE term LIKE %' + term)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    },
+    {
+      "findingId": "F11",
+      "scanner": "gitnexus",
+      "category": "sql-injection",
+      "file": "src/search.ts",
+      "line": 51,
+      "summary": "Concatenated SQL in fullText search query",
+      "evidence": "db.query('SELECT * FROM index WHERE query=' + q)",
+      "confidence": "high",
+      "severity": "critical",
+      "priority": "critical",
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      }
+    }
+  ],
+  "groups": [
+    {
+      "groupKey": "sql-injection:src/db.ts",
+      "category": "sql-injection",
+      "file": "src/db.ts",
+      "severity": "critical",
+      "priority": "critical",
+      "memberCount": 5,
+      "epic": true,
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      },
+      "findingIds": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ]
+    },
+    {
+      "groupKey": "sql-injection:src/repo.ts",
+      "category": "sql-injection",
+      "file": "src/repo.ts",
+      "severity": "critical",
+      "priority": "critical",
+      "memberCount": 3,
+      "epic": true,
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      },
+      "findingIds": [
+        "F6",
+        "F7",
+        "F8"
+      ]
+    },
+    {
+      "groupKey": "sql-injection:src/search.ts",
+      "category": "sql-injection",
+      "file": "src/search.ts",
+      "severity": "critical",
+      "priority": "critical",
+      "memberCount": 3,
+      "epic": true,
+      "duplicate": {
+        "status": "no-match",
+        "issueNumber": null,
+        "issueUrl": null,
+        "reason": ""
+      },
+      "findingIds": [
+        "F9",
+        "F10",
+        "F11"
+      ]
+    }
+  ],
+  "labels": {
+    "reuse": [],
+    "create": [
+      "priority:critical",
+      "security",
+      "severity:critical",
+      "type:security"
+    ]
+  },
+  "generated_at": "2026-09-15T00:27:47.829Z"
+}
