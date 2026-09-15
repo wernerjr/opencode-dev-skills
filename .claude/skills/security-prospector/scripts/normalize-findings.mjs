@@ -27,7 +27,7 @@ function normalizeText(text) {
 
 function maskIfLong(text) {
   const s = String(text || "")
-  return s.length > 600 ? `${s.slice(0, 600)}\n…[trimmed]` : s
+  return s.length > 600 ? `${s.slice(0, 600)}\n...[trimmed]` : s
 }
 
 function assertCategory(category) {
