@@ -155,19 +155,18 @@ secrets, Terraform backends, or files reachable from production CI.
 ### Probe verdict (gitleaks)
 
 `gitleaks` 8.30.1 is installed at `/opt/homebrew/bin/gitleaks`. Ran
-`gitleaks detect --report-format json` in the workspace. The startup banner is a
-unicode logo; the banner line is omitted here to keep this file ASCII-only, but
-all informational lines are verbatim:
+`gitleaks detect --no-banner --source .` in the workspace. ANSI color escape
+codes in the terminal output are omitted here to keep this file ASCII-only; all
+informational lines are verbatim:
 
 ```
-gitleaks
-
-9:11PM INF 29 commits scanned.
-9:11PM INF scanned ~294371 bytes (294.37 KB) in 103ms
-9:11PM INF no leaks found
+9:15PM INF 30 commits scanned.
+9:15PM INF scanned ~305780 bytes (305.78 KB) in 106ms
+9:15PM INF no leaks found
 ```
 
-Exit code: 0. No findings JSON printed (empty report).
+Exit code: 0. `--no-banner` suppresses the unicode startup logo, so stdout stays
+clean and no banner stripping is needed.
 
 Verdict: `scanners.gitleaks = []` (ran, no findings). Had a finding been
 present, only `maskedEvidence` would be recorded (prefix + `file:line`);
@@ -244,7 +243,7 @@ no git remotes found       (exit 1)
 
 $ gh auth status
 github.com
-  Logged in to github.com account wernerjr (keyring)
+  [checkmark marker omitted] Logged in to github.com account wernerjr (keyring)
   - Active account: true
   - Git operations protocol: https
   - Token: [redacted by reference author]
@@ -263,7 +262,7 @@ This repo has no `package.json`, so there is no `npm run check` /
 | Check | Command | Verified result (real output) |
 |---|---|---|
 | Whitespace / patch hygiene | `git diff --check` | clean, exit 0 |
-| ASCII-only content | `LC_ALL=C grep -nP '[^\x00-\x7F]' <file>` | no output (exit 1), file ASCII-only |
+| ASCII-only content | `LC_ALL=C perl -ne 'print if /[^\x00-\x7F]/' <file>` | no output, file ASCII-only (prints the matched line otherwise) |
 | Node syntax of normalizer | `node --check .claude/skills/security-prospector/scripts/normalize-findings.mjs` | exit 0 |
 | Normalizer unit tests | `node .claude/skills/security-prospector/scripts/test/normalize-findings.test.mjs` | 11 run, 11 pass, 0 fail, exit 0 |
 
