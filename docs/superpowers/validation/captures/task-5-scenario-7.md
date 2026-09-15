@@ -147,6 +147,7 @@ Full command log and normalizer output are preserved verbatim in
 
 ## Deviations
 
+- Wording divergence (flagged for review): the design doc's evaluation point says "One epic"; the skill's grouping rule (category + file) produced three per-file epics in this run. The run is faithful to the skill's rule; the doc's wording diverges and is recorded here.
 - Scenario numbering: the Task 5 harness originally called this epic-cluster
   scenario "Scenario 6", while `security-prospector-pressure-scenarios.md` and
   the design doc call it #7 ("Secret masking" is #6 there). This regeneration
@@ -173,3 +174,6 @@ Full command log and normalizer output are preserved verbatim in
   clean log after regenerating all 14 bodies. The final log contains exactly one
   ordered sequence and is the authoritative evidence.
 - **Raw evidence availability:** raw dump retained at `raw-captures/task-5/green-scenario-7-raw.md`, with `raw-captures/task-5/green-scenario-7-plan.json` and `raw-captures/task-5/green-scenario-7-raw-input.json` (epic evidence).
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

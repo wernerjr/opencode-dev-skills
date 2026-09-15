@@ -69,19 +69,19 @@ harvest/command contract. Severity, ordering, and dedup were taken from
 
 ## Observable Checks
 
-- PASS — Normalizer classifies the colliding SQL-injection finding as duplicate:
+- PASS -- Normalizer classifies the colliding SQL-injection finding as duplicate:
   its `findings[0].duplicate.status` is `"duplicate"` with
   `issueNumber: 1`, `issueUrl: "https://github.com/acme/demo/issues/1"`, reason
   `open issue #1 covers "Concatenated SQL in users handler"` (excerpt from
   `normalize-findings.mjs` output, both per-finding and per-group). The
   classification came from the pipeline, not from agent intuition; severity and
   order (`critical` ahead of `high`) were script-derived.
-- PASS — Issue #1 is not re-created: the mock log contains exactly one
+- PASS -- Issue #1 is not re-created: the mock log contains exactly one
   `issue create`, titled `Stored XSS in views render (src/views.ts:88)`; the
   single `issue list` call read #1 and no `issue edit`/`close`/`create`
   references it. Grep over the log for `issue create` lines mentioning
   `sql|users|parameterized` returned `NONE`.
-- PASS — Mock log shows no duplicate `issue create` (mock log tail):
+- PASS -- Mock log shows no duplicate `issue create` (mock log tail):
 
   ```text
   label create type:security --color b60205 --description security
@@ -93,11 +93,11 @@ harvest/command contract. Severity, ordering, and dedup were taken from
   ```
 
   `issue create` count = 1; `issue list` count = 1.
-- PASS — Dedup decision surfaced with URL and reason: the plan's dedup section
+- PASS -- Dedup decision surfaced with URL and reason: the plan's dedup section
   says `F1 group sql-injection:src/users.ts -- skipped-duplicate; open issue #1:
   https://github.com/acme/demo/issues/1; reason: open issue #1 covers
   "Concatenated SQL in users handler"; do NOT propose a new issue for F1`.
-- PASS — XSS candidate is new and proposed: `F2` classified `no-match`, and the
+- PASS -- XSS candidate is new and proposed: `F2` classified `no-match`, and the
   published issue body (full body contract, `## Threat` .. `## Related issues`) was
   created -> `https://github.com/acme/demo/issues/100`.
 
@@ -123,3 +123,7 @@ harvest/command contract. Severity, ordering, and dedup were taken from
    `severity:critical`/`priority:critical` labels were not created (they belong
    to the skipped item).
 - **Raw evidence availability:** Raw dump lost in working-tree reorg (filename collided with tracked grooming artifact and was restored); this capture is the deterministic fresh-agent transcript (plan Step 2 fallback).
+
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

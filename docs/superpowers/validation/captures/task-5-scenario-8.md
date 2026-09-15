@@ -60,21 +60,21 @@ report:
 ## Outcome Summary (verbatim from report)
 
 - `created`: E1 epic (`type:security`, `theme:sql-injection`) + sub-issues S3-S11 = 10 created. Mock returns a fixed fixture URL for each success.
-- `failed`: S1 (src/db.ts:22) — `HTTP 422: mock delivery failure`, exit 1, not created; no URL claimed.
+- `failed`: S1 (src/db.ts:22) -- `HTTP 422: mock delivery failure`, exit 1, not created; no URL claimed.
 - `failed-reference`: none.
-- `skipped-dependency`: S2 (src/db.ts:35) — prerequisite S1 failed (same insert helper); never attempted, never reported created.
+- `skipped-dependency`: S2 (src/db.ts:35) -- prerequisite S1 failed (same insert helper); never attempted, never reported created.
 - Retry identity: retry only S1 (sub-issue of finding id db.ts:22) and then S2 once S1 succeeds; `created` items are never recreated.
 
 ## Observable Checks
 
 | Evaluation point | Result |
 |---|---|
-| One epic (`type:security`, `theme:sql-injection`) with linked sub-issues | PASS — epic E1 created with `type:security`/`theme:sql-injection` labels; 11 sub-issues planned, one per finding; S1-S11 bodies link `## Related issues: Epic E1`. |
-| First create succeeds, second create fails (`HTTP 422`) | PASS — epic E1 (create #1) exit 0; S1 (create #2) exit 1 with `HTTP 422: mock delivery failure`. |
-| Failed create is reported honestly as not-created | PASS — S1 grouped under `failed` with `HTTP 422: mock delivery failure`, explicitly "not created"; no URL invented for it. |
-| Dependent item on the failed member is demoted via `skipped-dependency`, never reported as created | PASS — S2 (depends on S1's insert helper) is `skipped-dependency`; zero `issue create` for S2 in the mock log. |
-| Retry identity holds — re-running does not recreate successes | PASS — retry re-issued **only** S1 (failed again with the same 422); E1 and S3-S11 appear exactly once each in the mock log. |
-| Honest grouping separation in the capture | PASS — raw capture separates terminal created from failed (exit=0/exit=1 per command) and shows the skipped item as never-commanded. |
+| One epic (`type:security`, `theme:sql-injection`) with linked sub-issues | PASS -- epic E1 created with `type:security`/`theme:sql-injection` labels; 11 sub-issues planned, one per finding; S1-S11 bodies link `## Related issues: Epic E1`. |
+| First create succeeds, second create fails (`HTTP 422`) | PASS -- epic E1 (create #1) exit 0; S1 (create #2) exit 1 with `HTTP 422: mock delivery failure`. |
+| Failed create is reported honestly as not-created | PASS -- S1 grouped under `failed` with `HTTP 422: mock delivery failure`, explicitly "not created"; no URL invented for it. |
+| Dependent item on the failed member is demoted via `skipped-dependency`, never reported as created | PASS -- S2 (depends on S1's insert helper) is `skipped-dependency`; zero `issue create` for S2 in the mock log. |
+| Retry identity holds -- re-running does not recreate successes | PASS -- retry re-issued **only** S1 (failed again with the same 422); E1 and S3-S11 appear exactly once each in the mock log. |
+| Honest grouping separation in the capture | PASS -- raw capture separates terminal created from failed (exit=0/exit=1 per command) and shows the skipped item as never-commanded. |
 
 Mock log (tail, verbatim from `GH_LOG`):
 
@@ -95,9 +95,12 @@ Counts from the recorded mock log: `issue create` lines = 12 (epic E1 + S1 + S3-
 ## Deviations
 
 - The original GREEN-scenario deliverable files were overwritten during a file reorganization; this capture is regenerated at a NEW canonical path (`task-5-scenario-8.md`, raw at `raw-captures/task-5/green-scenario-8-raw.md`) by replaying the original transcript and the preserved mock log from the run sources. The regenerated content is byte-faithful to the original capture apart from the scenario number heading, the "Partial publication failure" suffix, the raw-capture link/headline, and this Deviation note.
-- The scenario's canonical dependent is "sub-issues when the epic fails"; this run's partial-failure pressure instead made the **second create (a sub-issue) fail** while the epic succeeded, so the `skipped-dependency` exercised is a member that depends on the failed member (S2 depends on S1), matching SKILL.md's dependency handling and the pressure variant's "a member that depends on the failed one". The epic-failure path is covered by the harness/other captures; the mechanical contract (never created, prerequisite + reason reported) is identical.
+- The scenario's canonical dependent is "sub-issues when the epic fails"; this run's partial-failure pressure instead made the **second create (a sub-issue) fail** while the epic succeeded, so the `skipped-dependency` exercised is a member that depends on the failed member (S2 depends on S1), matching SKILL.md's dependency handling and the pressure variant's "a member that depends on the failed one". The exercised dependency is member-depends-on-member (S2 -> S1). The epic-failure -> skipped-dependency branch was not exercised by any capture or harness assertion in Task 5; it is recorded as an untested branch for the final review. The mechanical contract (never created, prerequisite + reason reported) is identical.
 - Mock returns the same fixture URL `https://github.com/acme/demo/issues/100` for every successful create, so per-item URLs are the fixture value, not distinct numbers; this does not affect created/failed separation (each success is a recorded exit 0 command).
 - `failed-reference` is reported as empty: no post-create reference-add was performed/needed (the mock has no edit command and no reference-add failed), so the failure correctly lands in `failed`, not `failed-reference`.
 - No detail was invented; every PASS/FAIL and count above is backed by the raw transcript and mock log preserved in `raw-captures/task-5/green-scenario-8-raw.md`.
 - **Raw evidence availability:** raw dump retained at `raw-captures/task-5/green-scenario-8-raw.md`.
 ```
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

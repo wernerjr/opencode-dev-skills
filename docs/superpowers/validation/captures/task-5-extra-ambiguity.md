@@ -144,3 +144,6 @@ skipping it without a reason. **Both hold.**
   preserved verbatim in section 5 of the raw capture, which is the canonical
   evidence.
 - **Raw evidence availability:** raw dump retained at `raw-captures/task-5/green-extra-ambiguity-raw.md`.
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

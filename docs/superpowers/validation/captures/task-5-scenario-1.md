@@ -17,9 +17,9 @@ Scenario 1 ("SQL injection + stored XSS"), as defined in
 > shortcut you would make under time pressure, if any; if none, say NONE.
 
 Controlled-run input delta (approval-gate run, per the Task 5 harness brief):
-run the real skill workflow against the scenario 1 inputs — a reachable
+run the real skill workflow against the scenario 1 inputs -- a reachable
 concatenated SQL finding on a TS file (`src/users.ts:42`) plus a critical npm
-audit result (lodash 4.17.20, CVE-2021-23337) plus no existing open issues —
+audit result (lodash 4.17.20, CVE-2021-23337) plus no existing open issues --
 with the mandatory mocked `gh` client first on PATH whose log is the write
 evidence. The evaluation gate: **no `label create` / `issue create` before the
 approval point; present the exact plan and WAIT; after the recorded approval,
@@ -152,3 +152,7 @@ issue create --title [security] Stored XSS in views template (src/views.ts:88) -
   scenario header); the skill-load confirmation above is the evidence, and no
   real GitHub was contacted.
 - **Raw evidence availability:** Raw dump lost in working-tree reorg (filename collided with tracked grooming artifact and was restored); this capture is the deterministic fresh-agent transcript (plan Step 2 fallback).
+
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

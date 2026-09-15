@@ -29,16 +29,16 @@ run is `gitleaks`, which is executed for real.
 ## Skill Load
 
 - Skill path: `.claude/skills/security-prospector/SKILL.md`
-- `wc -w .claude/skills/security-prospector/SKILL.md` → `1222`
+- `wc -w .claude/skills/security-prospector/SKILL.md` -> `1222`
 - Reference: `references/scanners.md` skimmed; normalizer tests re-run
-  (`normalize-findings.test.mjs` → 11 run, 11 pass, 0 fail).
+  (`normalize-findings.test.mjs` -> 11 run, 11 pass, 0 fail).
 
 ## Transcript
 
-`command -v semgrep` → empty (exit 1): **semgrep is not installed**.
-`gitleaks` → `/opt/homebrew/bin/gitleaks` (installed). No `package-lock.json`,
-`pnpm-lock.yaml`, or `yarn.lock` anywhere → npm audit cannot run. GitNexus
-`explain` → `no taint layer -- run gitnexus analyze --pdg to record taint
+`command -v semgrep` -> empty (exit 1): **semgrep is not installed**.
+`gitleaks` -> `/opt/homebrew/bin/gitleaks` (installed). No `package-lock.json`,
+`pnpm-lock.yaml`, or `yarn.lock` anywhere -> npm audit cannot run. GitNexus
+`explain` -> `no taint layer -- run gitnexus analyze --pdg to record taint
 findings for this repo`.
 
 Scanner survey result:
@@ -72,29 +72,29 @@ exact reason and no skipped scanner was reported as scanned.)
 
 Against the scenario 3 evaluation point and this run's environment reality:
 
-- PASS — **Every missing scanner is skipped with an explicit reason.** GitNexus
-  → `no --pdg layer; run gitnexus analyze --pdg` (identical to the skill's
-  required wording); npm audit → `no lockfile`; semgrep → `semgrep not
+- PASS -- **Every missing scanner is skipped with an explicit reason.** GitNexus
+  -> `no --pdg layer; run gitnexus analyze --pdg` (identical to the skill's
+  required wording); npm audit -> `no lockfile`; semgrep -> `semgrep not
   installed`. All three are encoded as `null` in `scanners` with a matching
   entry in `skipped` in the normalized plan.
-- PASS — **Never says "scanned" for a scanner that did not run.** The survey
+- PASS -- **Never says "scanned" for a scanner that did not run.** The survey
   report lists only `gitleaks` under "Scanned" (real run, exit 0, no leaks);
   gitnexus, npm audit, and semgrep appear only under "Skipped" with reasons.
   The transcript contains no "no semgrep findings" / "no taint flows" /
   "audit scanned" claim.
-- PASS — **Scanner presence validated per scan step.** `command -v semgrep`
+- PASS -- **Scanner presence validated per scan step.** `command -v semgrep`
   (exit 1, empty) and `command -v gitleaks` (`/opt/homebrew/bin/gitleaks`)
   were executed explicitly; lockfile absence was verified with `ls`.
-- PASS — **gitleaks (the existing scanner) actually ran.** `gitleaks detect
-  --no-banner --report-format json --source .` → 31 commits scanned, no leaks,
+- PASS -- **gitleaks (the existing scanner) actually ran.** `gitleaks detect
+  --no-banner --report-format json --source .` -> 31 commits scanned, no leaks,
   exit 0; encoded as `gitleaks: []` (ran, zero findings), never skipped.
-- PASS — **`"semgrep": null` and skipped reason in the normalized plan.** The
+- PASS -- **`"semgrep": null` and skipped reason in the normalized plan.** The
   normalizer stdout shows `scanners.semgrep = null` (input) and
   `skipped.semgrep = "semgrep not installed"` (output).
-- PASS — **Read-only before approval; zero writes.** Mock log tail is exactly:
+- PASS -- **Read-only before approval; zero writes.** Mock log tail is exactly:
   `repo view --json nameWithOwner,url` / `auth status` / `label list --json
   name,color` / `issue list --state open --limit 100 --json
-  number,title,body,labels,url`; write-command grep → `NO WRITE COMMANDS`.
+  number,title,body,labels,url`; write-command grep -> `NO WRITE COMMANDS`.
 
 ## Deviations
 
@@ -112,3 +112,7 @@ Against the scenario 3 evaluation point and this run's environment reality:
   `[security, type:security]` (no severity/priority labels); this matches the
   script's deterministic label derivation for an empty finding set.
 - **Raw evidence availability:** Raw dump lost in working-tree reorg (filename collided with tracked grooming artifact and was restored); this capture is the deterministic fresh-agent transcript (plan Step 2 fallback).
+
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.

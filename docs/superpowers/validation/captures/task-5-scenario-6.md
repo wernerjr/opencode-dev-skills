@@ -123,3 +123,7 @@ Scenario 6 status: **PASS**
 `/tmp/sc4-mock-a5f0`, is consistent with the executed commands shown above.
     Nothing was invented.
 - **Raw evidence availability:** Raw dump lost in working-tree reorg (filename collided with tracked grooming artifact and was restored); this capture is the deterministic fresh-agent transcript (plan Step 2 fallback).
+
+### Post-run compression reconciliation
+
+This run was executed against the pre-compression SKILL.md (wc -w: 1222). The committed text is the human-approved compression (wc -w: 677) which preserves every normative contract (verified by task review: needle checks, harness re-run, and the nine body-section order). The harness still passes against the committed text.
