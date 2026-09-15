@@ -177,7 +177,8 @@ export function normalize(input) {
     SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity]
     || (a.file < b.file ? -1 : a.file > b.file ? 1 : (a.groupKey < b.groupKey ? -1 : 1))
   )
-  const orderedFindings = groups.flatMap((g) => enriched.filter((f) => g.findingIds.includes(f.findingId)))
+  const byFindingId = new Map(enriched.map((f) => [f.findingId, f]))
+  const orderedFindings = groups.flatMap((g) => g.findingIds.map((id) => byFindingId.get(id)))
 
   const severities = [...new Set(orderedFindings.map((f) => f.severity))]
   const priorities = [...new Set(orderedFindings.map((f) => f.priority))]
