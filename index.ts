@@ -65,7 +65,22 @@ async function clearPluginCache(client: any) {
   await log(client, "info", "Restart OpenCode to pull the new skill version.")
 }
 
-export default async function OpencodeDevSkillsPlugin({ client }: any) {
+// OpenCode v2 loader requires `export default { id, setup }` (object), not a bare
+// function (V1). Wrap the V1 plugin so both loaders accept this module.
+export default {
+  id: "opencode-dev-skills",
+  setup: async (ctx: any) => {
+    try {
+      await OpencodeDevSkillsPlugin(ctx)
+    } catch {
+      // hook transport not available in this host — nothing to do
+    }
+  },
+  // `server` keeps OpenCode v1 hosts working; v2 ignores it.
+  server: OpencodeDevSkillsPlugin,
+}
+
+async function OpencodeDevSkillsPlugin({ client }: any) {
   return {
     config: async (config: any) => {
       config.skills ??= {}
